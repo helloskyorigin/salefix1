@@ -66,3 +66,12 @@ The kit currently includes editable sales-page copy and downloadable HTML; 10 ed
 **Payment integration is still missing.** `/api/checkout` remains disabled. Never issue tokens from a public endpoint or from client-supplied `verifiedProviderEvent` fields. Only invoke `issueKitAccess` server-side after checking a completed $49 USD payment via a **cryptographically verified provider webhook**, and email the resulting link to its purchaser. The signed link currently expires after 7 days; before charging customers, add a secure email reissue mechanism (and persistent purchase records) so they can regain access without logging in. The local server supports `/api/paid-kit` with the same access validation.
 
 For security, do not put actual payment tokens, private email addresses, or `SALEFIX_KIT_SECRET` in Git. The paid workspace cannot be used by customers until the payment verification, secure link delivery, reissue and support processes are connected and tested.
+
+
+## Product-first file audit (free)
+
+Visitors can upload up to three digital-product files (20 MB each, 45 MB combined) **without a website link**; a sales-page URL and manual description are optional. The browser extracts supported content and sends only excerpts, file inventory and metadata to `/api/analyze` (not the raw binary files). The backend reviews product completeness and usability using format-specific, conservative heuristics and displays the exact source of each observation. A separate sales-page check appears only when an accessible link is provided.
+
+Supported top-level input formats: PDF, ZIP, DOCX, XLSX, PPTX, EPUB, TXT, Markdown, CSV/TSV, JSON, PNG/JPEG/WEBP, and SVG. PDF text is extracted with lazy-loaded PDF.js (first 90 pages or capped excerpt); archive/Office/EPUB text is parsed using lazy-loaded JSZip. In ZIPs, the tool inventories all entries and samples small readable text files; it **does not execute files or visually inspect templates**, parse nested PDFs, detect broken formulas, verify factual claims, or perform OCR. For image assets, metadata is inspected, not design quality. Truncated/unsupported inspection is clearly disclosed. PDF.js requires internet connectivity to load; JSZip is bundled locally.
+
+Archive protections: max 220 entries, 75 MB estimated uncompressed; no executable execution; no server-side file storage. This is a useful preliminary product audit, not a guarantee of sales, factual correctness, or complete file validation. Use appropriate rate limiting on `/api/analyze` before high traffic. Checkout remains disabled.

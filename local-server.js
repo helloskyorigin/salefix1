@@ -10,7 +10,7 @@ const server=http.createServer(async(req,res)=>{
   if(req.url?.split('?')[0]==='/api/analyze'){
     if(req.method!=='POST'){res.writeHead(405);res.end('Method not allowed');return}
     const chunks=[];let length=0;
-    for await(const chunk of req){length+=chunk.length;if(length>16000){res.writeHead(413);res.end('Too large');return}chunks.push(chunk)}
+    for await(const chunk of req){length+=chunk.length;if(length>90000){res.writeHead(413);res.end('Too large');return}chunks.push(chunk)}
     try{const result=await analyzeProduct(JSON.parse(Buffer.concat(chunks).toString('utf8')));res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(result))}
     catch(e){res.writeHead(400,{'Content-Type':'application/json'});res.end(JSON.stringify({error:String(e.message)}))};return;
   }
