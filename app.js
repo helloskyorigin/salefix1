@@ -28,7 +28,8 @@ const icon=(name,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 2
 const logo=()=>`<a href="#/" class="logo" aria-label="SaleFix home"><img src="/assets/salefix-logo.png" alt=""/><span>SaleFix</span></a>`;
 const state={url:'',audience:'',benefit:'',manual:'',productName:'',results:null,error:'',showManualDetails:false,activeFaq:-1,analyzing:false,scanStarted:0};
 try{state.results=JSON.parse(sessionStorage.getItem('salefix-analysis')||'null');}catch{}
-function nav(route){location.hash=`#/${route||''}`;window.scrollTo({top:0,behavior:'instant'});render()}
+let activeAnalysisController=null;
+function nav(route){if(route!=='loading'&&state.analyzing&&routeFromHash()==='loading'){activeAnalysisController?.abort();state.analyzing=false;}location.hash=`#/${route||''}`;window.scrollTo({top:0,behavior:'instant'});render()}
 function header(compact=false){return `<header class="site-header"><div class="container header-inner">${logo()}<nav class="nav-links"><a href="#/#how">How it works</a><a href="#/#features">Features</a><a href="#/#pricing">Pricing</a><a href="#/#faq">FAQ</a></nav><a class="button button-primary button-small" href="#/analyze">${compact?'New analysis':'Analyze my product'} ${icon('arrow',15)}</a></div></header>`}
 function footer(){return `<footer class="footer container"><div>${logo()}<p>Clearer offers. Better first impressions.</p><a class="footer-email" href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></div><div class="footer-right"><span>© ${new Date().getFullYear()} SaleFix</span><a href="#/contact">Contact</a><a href="#/privacy">Privacy</a><a href="#/terms">Terms</a><a href="#/refunds">Refunds</a></div></footer>`;}
 function browserWindow(inner,extra=''){return `<div class="browser-window ${extra}"><div class="browser-top"><span></span><span></span><span></span></div>${inner}</div>`}
@@ -188,19 +189,20 @@ async function startAnalysis(){
   state.error='';state.results=null;
   try{const url=new URL(state.url);if(!['http:','https:'].includes(url.protocol)||url.username||url.password){showAnalyzeError('Use a public http:// or https:// product page link.');return;}}catch{showAnalyzeError('Enter a valid product website URL, including https://.');return;}
   try{sessionStorage.removeItem('salefix-analysis')}catch{}
-  state.analyzing=true;nav('loading');
+  state.analyzing=true;const controller=new AbortController();activeAnalysisController=controller;nav('loading');
   try{
-    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName})});
-    const data=await res.json();if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName}),signal:controller.signal});
+    const data=await res.json();if(controller.signal.aborted)return;if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
     state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}
     state.analyzing=false;
     if(routeFromHash()==='loading')nav('results');
   }catch(e){
+    if(controller.signal.aborted)return;
     const message=String(e.message||e);
     const needsManual=/manual|timed out|could not|website|site |http \d|fetch|readable|blocked|html|redirect|content/i.test(message);
     if(routeFromHash()==='loading')showAnalyzeError(message,needsManual);
     else{state.error=message;state.showManualDetails=state.showManualDetails||needsManual;state.analyzing=false;}
-  }
+  }finally{if(activeAnalysisController===controller)activeAnalysisController=null;}
 }
 document.addEventListener('submit',e=>{
   if(e.target.id==='hero-form'){e.preventDefault();state.url=$('#hero-url').value.trim();state.error='';nav('analyze');}
@@ -213,5 +215,5 @@ document.addEventListener('submit',e=>{
 });
 document.addEventListener('toggle',e=>{if(e.target?.id==='manual-details')state.showManualDetails=e.target.open;},true);
 document.addEventListener('click',e=>{if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
-window.addEventListener('hashchange',()=>{if(location.hash!==lastRenderedHash)render()});
+window.addEventListener('hashchange',()=>{if(state.analyzing&&lastRenderedHash==='#/loading'&&routeFromHash()!=='loading'){activeAnalysisController?.abort();state.analyzing=false;}if(location.hash!==lastRenderedHash)render()});
 render();
