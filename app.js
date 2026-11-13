@@ -26,7 +26,7 @@ const paths={
 };
 const icon=(name,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.spark}</svg>`;
 const logo=()=>`<a href="#/" class="logo" aria-label="SaleFix home"><img src="/assets/salefix-logo.png" alt=""/><span>SaleFix</span></a>`;
-const state={url:'',audience:'',benefit:'',manual:'',productName:'',results:null,error:'',activeFaq:-1,analyzing:false,scanStarted:0};
+const state={url:'',audience:'',benefit:'',manual:'',productName:'',results:null,error:'',showManualDetails:false,activeFaq:-1,analyzing:false,scanStarted:0};
 try{state.results=JSON.parse(sessionStorage.getItem('salefix-analysis')||'null');}catch{}
 function nav(route){location.hash=`#/${route||''}`;window.scrollTo({top:0,behavior:'instant'});render()}
 function header(compact=false){return `<header class="site-header"><div class="container header-inner">${logo()}<nav class="nav-links"><a href="#/#how">How it works</a><a href="#/#features">Features</a><a href="#/#pricing">Pricing</a><a href="#/#faq">FAQ</a></nav><a class="button button-primary button-small" href="#/analyze">${compact?'New analysis':'Analyze my product'} ${icon('arrow',15)}</a></div></header>`}
@@ -141,10 +141,10 @@ return `${header()}
 function faqItem(i,q,a){return `<details class="surface faq-item"><summary>${safe(q)}${icon('chevron',20)}</summary><p>${safe(a)}</p></details>`}
 function stepsNav(active){const working=active===2;return `<div class="progress-nav" aria-label="Analysis progress"><div class="on"><b>${active>1?icon('check',14):'1'}</b> Analyze Product</div><i></i><div class="${active>1?'on':''}"><b>2</b> ${working?'Analyzing…':'Get Results'}</div></div>`}
 function analyze(){return `${header()}<main class="container workspace analyze-page">${stepsNav(1)}<div class="form-layout"><div><div class="workspace-heading"><h1>Let’s <span>analyze</span> your product.</h1><p>We’ll find opportunities to improve your offer and sales page.</p></div>
-<form id="analyze-form" class="surface product-form"><div class="field-row"><span class="field-icon">${icon('link',25)}</span><label>Product URL <em>*</em><input type="url" name="url" required placeholder="https://gumroad.com/l/your-product" maxlength="1200" autocomplete="url" value="${safe(state.url)}"/></label></div>
+<form id="analyze-form" class="surface product-form">${state.error?`<div class="error-message analyze-error" role="alert" tabindex="-1">${icon('alert',19)} <span>${safe(state.error)}</span></div>`:'' }<div class="field-row"><span class="field-icon">${icon('link',25)}</span><label>Product URL <em>*</em><input type="url" name="url" required placeholder="https://gumroad.com/l/your-product" maxlength="1200" autocomplete="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="product-url-help" value="${safe(state.url)}"/><small id="product-url-help" class="analyze-input-hint">Use a public product page link.</small></label></div>
 <div class="field-row"><span class="field-icon purple">${icon('person',25)}</span><label>Who is your product for? <small>(Optional)</small><input name="audience" maxlength="130" autocomplete="off" placeholder="e.g. Freelancers, creators, students" value="${safe(state.audience)}"/></label></div>
 <div class="field-row"><span class="field-icon violet">${icon('bolt',25)}</span><label>What does your product help people do? <small>(Optional)</small><textarea name="benefit" maxlength="200" rows="2" placeholder="Describe the main benefit in 1–2 lines...">${safe(state.benefit)}</textarea></label></div>
-<details class="manual-details"><summary>Page blocked? Add product details manually ${icon('chevron',16)}</summary><label>Product title <small>Optional</small><input name="productName" maxlength="100" placeholder="Your product name" value="${safe(state.productName)}"/></label><label>Actual product description / sales copy<textarea name="manual" maxlength="6000" rows="5" placeholder="Paste the real text from your product page here">${safe(state.manual)}</textarea></label><p>Used only if the website blocks the analyzer. At least 60 characters required.</p></details>
+<details id="manual-details" class="manual-details" ${state.showManualDetails?'open':''}><summary>Page blocked? Add product details manually ${icon('chevron',16)}</summary><label>Product title <small>Optional</small><input name="productName" maxlength="100" placeholder="Your product name" value="${safe(state.productName)}"/></label><label>Actual product description / sales copy<textarea name="manual" maxlength="6000" rows="5" placeholder="Paste the real text from your product page here">${safe(state.manual)}</textarea></label><p>Used only if the website blocks the analyzer. At least 60 characters required.</p></details>
 <button type="submit" class="button button-primary full-width jumbo">${icon('spark',19)} Analyze My Product ${icon('arrow',20)}</button><div class="form-trust"><span>${icon('checkcircle',16)} Free analysis</span><span>${icon('checkcircle',16)} No signup</span><span>${icon('checkcircle',16)} No card required</span></div></form></div>
 <aside class="form-aside" aria-label="Example of SaleFix audit capabilities"><div class="right-illustration"><div class="scan-card surface"><div class="scan-logo"><span class="audit-mark">${icon('bolt',19)}</span> SaleFix AI Audit</div><div class="scan-check">${icon('scan',20)} Review product messaging</div><div class="scan-check">${icon('checkcircle',20)} Suggest a clearer headline</div><div class="scan-check">${icon('checkcircle',20)} Improve product copy</div><div class="scan-check">${icon('checkcircle',20)} Give specific next steps</div></div><div class="scan-preview surface">${browserWindow('<div class="preview-mock-body"><div class="preview-mock-thumb">'+icon('layers',29)+'</div><div class="preview-mock-lines"><i></i><i></i><i></i></div></div><div class="preview-chart"><i></i><i></i><i></i></div>')}</div></div><h3>What you’ll get <span class="tag tag-green">Free</span></h3><div class="aside-benefit">${icon('scan',25)}<span><strong>Product Audit</strong><small>Find what could be clearer in your offer.</small></span></div><div class="aside-benefit">${icon('chart',25)}<span><strong>Improvement Suggestions</strong><small>Get a stronger headline, offer &amp; CTA.</small></span></div><div class="aside-benefit">${icon('eye',25)}<span><strong>Before &amp; After Preview</strong><small>See how your product message can improve.</small></span></div></aside></div></main>${footer()}`}
 function loadingProgress(){return `<div class="scan-progress" aria-label="Analysis progress"><span class="scan-progress-step completed"><span class="scan-progress-dot">${icon('check',15)}</span><span>Analyze Product</span></span><span class="scan-progress-line active"></span><span class="scan-progress-step current" aria-current="step"><span class="scan-progress-dot">2</span><span>Analyzing</span></span><span class="scan-progress-line"></span><span class="scan-progress-step pending"><span class="scan-progress-dot">3</span><span>Get Results</span></span></div>`}
@@ -182,11 +182,36 @@ document.body.dataset.page=(route===''||route.startsWith('#'))?'landing':'worksp
 const ui=route==='analyze'?analyze():route==='loading'?loading():route==='results'?showResult():route==='checkout'?checkout():['privacy','terms','refunds','contact'].includes(route)?legal(route):landing();$('#app').innerHTML=ui;
 if(route==='loading'&&!state.analyzing){ if(state.results)nav('results');else nav('analyze') }
 if(route===''||route.startsWith('#')){const anchor=route.slice(1);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:'smooth'}),50)} }
-async function startAnalysis(){state.error='';state.results=null;try{sessionStorage.removeItem('salefix-analysis')}catch{}state.analyzing=true;nav('loading');
-try{const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName})});
-const data=await res.json();if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}state.analyzing=false;nav('results');}
-catch(e){state.error=String(e.message||e);state.analyzing=false;nav('analyze');const form=$('#analyze-form');if(form){let err=document.createElement('div');err.className='error-message';err.textContent=state.error;form.prepend(err);}}}
-document.addEventListener('submit',e=>{if(e.target.id==='hero-form'){e.preventDefault();state.url=$('#hero-url').value.trim();nav('analyze')} if(e.target.id==='analyze-form'){e.preventDefault();const data=new FormData(e.target);for(let field of ['url','audience','benefit','manual','productName'])state[field]=String(data.get(field)||'').trim();startAnalysis()}});
+function showAnalyzeError(message,openManual=false){state.error=String(message||'Unable to analyze this product.');state.analyzing=false;if(openManual)state.showManualDetails=true;nav('analyze');}
+async function startAnalysis(){
+  if(state.analyzing)return;
+  state.error='';state.results=null;
+  try{const url=new URL(state.url);if(!['http:','https:'].includes(url.protocol)||url.username||url.password){showAnalyzeError('Use a public http:// or https:// product page link.');return;}}catch{showAnalyzeError('Enter a valid product website URL, including https://.');return;}
+  try{sessionStorage.removeItem('salefix-analysis')}catch{}
+  state.analyzing=true;nav('loading');
+  try{
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName})});
+    const data=await res.json();if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
+    state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}
+    state.analyzing=false;
+    if(routeFromHash()==='loading')nav('results');
+  }catch(e){
+    const message=String(e.message||e);
+    const needsManual=/manual|timed out|could not|website|site |http \d|fetch|readable|blocked|html|redirect|content/i.test(message);
+    if(routeFromHash()==='loading')showAnalyzeError(message,needsManual);
+    else{state.error=message;state.showManualDetails=state.showManualDetails||needsManual;state.analyzing=false;}
+  }
+}
+document.addEventListener('submit',e=>{
+  if(e.target.id==='hero-form'){e.preventDefault();state.url=$('#hero-url').value.trim();state.error='';nav('analyze');}
+  if(e.target.id==='analyze-form'){
+    e.preventDefault();const data=new FormData(e.target);
+    for(const field of ['url','audience','benefit','manual','productName'])state[field]=String(data.get(field)||'').trim();
+    state.showManualDetails=Boolean($('#manual-details')?.open);
+    startAnalysis();
+  }
+});
+document.addEventListener('toggle',e=>{if(e.target?.id==='manual-details')state.showManualDetails=e.target.open;},true);
 document.addEventListener('click',e=>{if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
 window.addEventListener('hashchange',()=>{if(location.hash!==lastRenderedHash)render()});
 render();
