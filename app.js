@@ -155,9 +155,9 @@ function loading(){const domain=(()=>{try{return new URL(state.url).hostname.rep
 <div class="scan-art" aria-hidden="true"><div class="scan-art-halo"></div><div class="scan-art-frame"><i class="scan-art-corner top-left"></i><i class="scan-art-corner top-right"></i><i class="scan-art-corner bottom-left"></i><i class="scan-art-corner bottom-right"></i></div><div class="scan-art-page"><div class="scan-art-browser"><i></i><i></i><i></i></div><div class="scan-art-content"><span class="scan-art-thumbnail"><i></i><i></i></span><span class="scan-art-rows"><i></i><i></i><i></i></span></div><div class="scan-art-bottom"><i></i><i></i></div></div><div class="scan-art-beam"></div></div>
 <div class="scan-copy"><h1>Analyzing your product<span>...</span></h1><p>Looking at your offer, messaging and sales page.</p></div>
 <div class="scan-checklist" role="status" aria-live="polite" aria-label="Analysis in progress"><div class="scan-checklist-row is-working"><span class="scan-row-spinner" aria-hidden="true"></span><span>Reviewing your product content</span><span class="scan-row-tag">In progress</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Understanding your target audience</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Checking your sales messaging</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Preparing personalized recommendations</span></div></div>
-<p class="scan-notice">${icon('bolt',18)} Your report will open automatically when the analysis is complete.</p>
+<p class="scan-notice">${icon('bolt',18)}  <span id="scan-notice-text">Your report will open automatically when the analysis is complete.</span></p><button id="cancel-analysis" type="button" class="scan-cancel-button">Cancel &amp; edit details</button>
 </section>
-<aside class="scan-side" aria-label="What SaleFix is reviewing"><div class="surface scan-product-card"><span class="scan-small-page" aria-hidden="true"><i></i><b></b><em></em></span><span class="scan-product-copy"><strong>Your Product</strong><small>Analyzing the public content from <b>${safe(domain)}</b></small></span></div>
+<aside class="scan-side" aria-label="What SaleFix is reviewing"><div class="surface scan-product-card"><span class="scan-small-page" aria-hidden="true"><i></i><b></b><em></em></span><span class="scan-product-copy"><strong>Your Product</strong><small>Reviewing <b>${safe(domain)}</b> and any details you provided</small></span></div>
 <div class="surface scan-criteria-card"><div class="scan-criteria-item"><span class="scan-criteria-icon lavender">${icon('scan',25)}</span><span><strong>Offer Analysis</strong><small>Is your product offer clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon sky">${icon('person',25)}</span><span><strong>Audience Fit</strong><small>Does the message fit your audience?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon indigo">${icon('chart',25)}</span><span><strong>Conversion Check</strong><small>Is the buying action clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon violet">${icon('spark',25)}</span><span><strong>Improvement Ideas</strong><small>Practical fixes based on your content.</small></span></div></div></aside></div></main>${footer()}`}
 function showResult(){const r=state.results;if(!r)return `${header(true)}<main class="container empty-state surface"><h1>No analysis yet</h1><p>Start with your public product link to get a free audit.</p><a class="button button-primary" href="#/analyze">Analyze product ${icon('arrow',18)}</a></main>${footer()}`;
 const price=r.product.price?`<span>${icon('bolt',16)} ${safe(r.product.price)}</span>`:'';
@@ -190,19 +190,30 @@ async function startAnalysis(){
   try{const url=new URL(state.url);if(!['http:','https:'].includes(url.protocol)||url.username||url.password){showAnalyzeError('Use a public http:// or https:// product page link.');return;}}catch{showAnalyzeError('Enter a valid product website URL, including https://.');return;}
   try{sessionStorage.removeItem('salefix-analysis')}catch{}
   state.analyzing=true;const controller=new AbortController();activeAnalysisController=controller;nav('loading');
+  let timedOut=false;
+  const slowNotice=setTimeout(()=>{
+    if(state.analyzing&&activeAnalysisController===controller&&routeFromHash()==='loading'){
+      const notice=document.getElementById('scan-notice-text');
+      if(notice)notice.textContent='This product page is taking longer than usual. You can stay here or cancel and edit your details.';
+    }
+  },12000);
+  const requestDeadline=setTimeout(()=>{timedOut=true;controller.abort();},40000);
   try{
     const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName}),signal:controller.signal});
-    const data=await res.json();if(controller.signal.aborted)return;if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
+    const data=await res.json();if(controller.signal.aborted){if(timedOut&&routeFromHash()==='loading')showAnalyzeError('Analysis timed out. Please try again or add your product description manually.',true);return;}if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
     state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}
     state.analyzing=false;
     if(routeFromHash()==='loading')nav('results');
   }catch(e){
-    if(controller.signal.aborted)return;
+    if(controller.signal.aborted){
+      if(timedOut&&routeFromHash()==='loading')showAnalyzeError('Analysis timed out. Please try again or add your product description manually.',true);
+      return;
+    }
     const message=String(e.message||e);
     const needsManual=/manual|timed out|could not|website|site |http \d|fetch|readable|blocked|html|redirect|content/i.test(message);
     if(routeFromHash()==='loading')showAnalyzeError(message,needsManual);
     else{state.error=message;state.showManualDetails=state.showManualDetails||needsManual;state.analyzing=false;}
-  }finally{if(activeAnalysisController===controller)activeAnalysisController=null;}
+  }finally{clearTimeout(slowNotice);clearTimeout(requestDeadline);if(activeAnalysisController===controller)activeAnalysisController=null;}
 }
 document.addEventListener('submit',e=>{
   if(e.target.id==='hero-form'){e.preventDefault();state.url=$('#hero-url').value.trim();state.error='';nav('analyze');}
@@ -214,6 +225,6 @@ document.addEventListener('submit',e=>{
   }
 });
 document.addEventListener('toggle',e=>{if(e.target?.id==='manual-details')state.showManualDetails=e.target.open;},true);
-document.addEventListener('click',e=>{if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
+document.addEventListener('click',e=>{if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
 window.addEventListener('hashchange',()=>{if(state.analyzing&&lastRenderedHash==='#/loading'&&routeFromHash()!=='loading'){activeAnalysisController?.abort();state.analyzing=false;}if(location.hash!==lastRenderedHash)render()});
 render();
