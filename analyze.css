@@ -1,0 +1,130 @@
+/* SaleFix Analyze screen • reference-faithful desktop, purpose-built mobile.
+   Scoped to .analyze-page so results / landing retain their own layout. */
+.analyze-page { padding-top:58px; min-height:830px; }
+.analyze-page .progress-nav { margin:0 0 42px 31px; gap:22px; color:#303954; font-size:14px; }
+.analyze-page .progress-nav>i { width:166px; background:#ccd3e4; }
+.analyze-page .progress-nav>div { gap:13px; }
+.analyze-page .progress-nav>div b { width:39px; height:39px; font-size:16px; font-weight:750; background:#e9eaf2; color:#5b6383; }
+.analyze-page .progress-nav>div.on { color:#0755eb; border-radius:100px; padding:5px 15px 5px 0; background:linear-gradient(90deg,transparent,#eef2ff); }
+.analyze-page .progress-nav>div.on b { background:linear-gradient(140deg,#2f7dff,#0750f5); box-shadow:0 6px 15px #1156ee24; }
+.analyze-page .form-layout { grid-template-columns:minmax(0,1.56fr) minmax(0,.99fr); gap:45px; align-items:start; }
+.analyze-page .workspace-heading { margin:0 0 25px 30px; }
+.analyze-page .workspace-heading .eyebrow { display:none; }
+.analyze-page .workspace-heading h1 { margin:0 0 10px; white-space:nowrap; font-size:clamp(38px,3.45vw,55px); line-height:1.1; font-weight:850; letter-spacing:-.059em; }
+.analyze-page .workspace-heading h1 span { color:#075cf4; background:none;-webkit-text-fill-color:#075cf4; }
+.analyze-page .workspace-heading p { font-size:17px; line-height:1.5; color:#404b68; letter-spacing:-.012em; }
+.analyze-page .product-form { padding:33px 31px 27px; border-radius:32px; background:#ffffffed; box-shadow:0 20px 50px #4856a112,0 2px 9px #6978a409; }
+.analyze-page .field-row { gap:22px; margin-bottom:33px; align-items:flex-start; }
+.analyze-page .field-icon { width:57px; height:57px; border-radius:20px; margin-top:0; background:linear-gradient(145deg,#f3f1ff,#e9efff); color:#2364f5; }
+.analyze-page .field-icon.purple { background:linear-gradient(145deg,#ecf5ff,#e5eeff); color:#2469f3; }
+.analyze-page .field-icon.violet { background:linear-gradient(145deg,#f4eefe,#ece8ff); color:#7b42f4; }
+.analyze-page .field-row label { font-size:16px; font-weight:790; letter-spacing:-.025em; line-height:1.55; min-width:0; }
+.analyze-page .field-row label small {font-size:14px;color:#838ba0;font-weight:450;}
+.analyze-page .field-row input,.analyze-page .field-row textarea { margin-top:7px; border:1px solid #d4d9e6; border-radius:17px; box-shadow:0 3px 8px #212e5f0a; min-height:55px; font-size:15px; line-height:1.4; padding:16px 18px; }
+.analyze-page .field-row textarea { min-height:104px; resize:vertical; }
+.analyze-page input:focus-visible,.analyze-page textarea:focus-visible,.analyze-page summary:focus-visible { outline:3px solid #82a8fd; outline-offset:2px; }
+.analyze-page .manual-details { margin:-12px 0 20px 79px; padding:13px 14px; border-radius:14px; background:#f4f7ff; }
+.analyze-page .manual-details[open] { padding-bottom:18px; }
+.analyze-page .manual-details summary { color:#536387; font-size:12px; }
+.analyze-page .manual-details textarea { width:100%; min-height:110px; border:1px solid #dde3ee; border-radius:12px; margin-top:7px; padding:12px; }
+.analyze-page .jumbo { min-height:67px; padding:17px 20px; border-radius:17px; font-size:20px; font-weight:750; gap:19px; }
+.analyze-page .form-trust { margin-top:25px; justify-content:space-evenly; gap:13px; color:#262b3d; font-size:14px; }
+.analyze-page .form-trust span { white-space:nowrap; }
+.analyze-page .form-trust svg { color:#00b854; stroke-width:2.6; width:20px; height:20px; }
+.analyze-page .form-aside { padding-top:0; }
+.analyze-page .right-illustration { height:341px; position:relative; margin:0 0 13px; isolation:isolate; }
+.analyze-page .right-illustration::before { content:""; position:absolute; z-index:-1; inset:22px 0 10px; border-radius:50%; background:radial-gradient(ellipse at 50% 48%,#cbd0ff9c,transparent 71%); filter:blur(15px); }
+.analyze-page .scan-card { background:#fff; width:280px; padding:20px 19px 22px; top:55px; left:7%; border-radius:24px; transform:rotate(-7deg); box-shadow:0 27px 42px #454ca72c; }
+.analyze-page .scan-card .scan-logo { font-size:16px; color:#172036; letter-spacing:-.035em; margin-bottom:18px; }
+.analyze-page .scan-logo .audit-mark { width:31px; height:31px; display:grid;place-items:center; border-radius:9px; background:linear-gradient(145deg,#2782ff,#064cf4); color:white; }
+.analyze-page .scan-logo .audit-mark svg { color:white; }
+.analyze-page .scan-check { gap:10px; padding:8px 0; color:#30364f; font-size:13px; font-weight:630; }
+.analyze-page .scan-check svg { color:#17ae67; }
+.analyze-page .scan-check:first-of-type svg { color:#ea6673; }
+.analyze-page .scan-preview { width:268px; height:228px; top:67px; right:2%; transform:rotate(5deg); padding:11px; border-radius:21px; background:linear-gradient(140deg,#f0ecff,#bdc1fc); box-shadow:0 22px 42px #5351af2a; }
+.analyze-page .scan-preview .browser-window { height:100%; background:#ffffffdb; border-radius:16px; }
+.analyze-page .scan-preview .browser-top { background:#eae6ff; }
+.analyze-page .preview-mock-body { display:grid; grid-template-columns:80px 1fr; gap:12px; padding:16px 13px; }
+.analyze-page .preview-mock-thumb { width:80px; height:67px; background:linear-gradient(135deg,#ac9cff,#7855ea); border-radius:10px; display:grid; place-items:center; color:#fff; }
+.analyze-page .preview-mock-lines i { display:block; height:7px; background:#d7d8ed; border-radius:10px; margin:6px 0 11px; }
+.analyze-page .preview-mock-lines i:nth-child(2) { width:65%; }.analyze-page .preview-mock-lines i:nth-child(3) { width:84%; }
+.analyze-page .preview-chart { display:flex; gap:9px; align-items:end; height:65px; justify-content:end; padding:5px 25px; }
+.analyze-page .preview-chart i { display:block; width:24px; background:linear-gradient(#8d70ff,#bbb5ff); border-radius:5px 5px 0 0; height:30px; }
+.analyze-page .preview-chart i:nth-child(2) { height:43px; }.analyze-page .preview-chart i:nth-child(3) { height:60px; }
+.analyze-page .form-aside h3 { font-size:25px; letter-spacing:-.04em; padding-left:18px; margin-bottom:22px; }
+.analyze-page .aside-benefit { margin:0 0 23px 18px; gap:18px; }
+.analyze-page .aside-benefit>svg { width:58px; height:58px; padding:16px; border-radius:18px; }
+.analyze-page .aside-benefit strong { font-size:17px; font-weight:790; letter-spacing:-.025em; }
+.analyze-page .aside-benefit small { font-size:14px; line-height:1.35; margin-top:4px; }
+@media (min-width:1300px) { .analyze-page .form-layout { gap:57px; } }
+@media (max-width:1190px) and (min-width:1025px) {
+ .analyze-page .form-layout { gap:26px; grid-template-columns:minmax(0,1.28fr) minmax(320px,.72fr); }
+ .analyze-page .workspace-heading { margin-left:0; }
+ .analyze-page .workspace-heading h1 { font-size:clamp(35px,3.65vw,46px); }
+ .analyze-page .workspace-heading p { font-size:15px; }
+ .analyze-page .scan-card { width:245px; left:0; }
+ .analyze-page .scan-preview { width:230px; right:0; }
+ .analyze-page .product-form { padding:25px; }
+ .analyze-page .field-row { gap:15px; }
+ .analyze-page .form-trust {font-size:12px;}
+}
+/* Below 850px the sales illustration and benefits sidebar are intentionally removed,
+   not squeezed into a narrower column. */
+@media (max-width:1024px) {
+ .analyze-page { padding-top:27px; min-height:0; }
+ .analyze-page .form-layout { display:block; max-width:670px; margin:auto; }
+ .analyze-page .form-aside { display:none !important; }
+ .analyze-page .progress-nav { justify-content:center; margin:0 0 33px; font-size:12px; }
+ .analyze-page .progress-nav>i {width:65px;}
+ .analyze-page .workspace-heading { margin:0 0 24px; }
+ .analyze-page .workspace-heading h1 { white-space:normal; font-size:clamp(36px,5.7vw,48px); }
+ .analyze-page .workspace-heading p { font-size:15px; }
+ .analyze-page .product-form {padding:27px; border-radius:28px;}
+ .analyze-page .field-row {margin-bottom:24px;}
+ .analyze-page .field-row label{font-size:15px;}
+ .analyze-page .field-row label small{font-size:12px;}
+ .analyze-page .field-row input,.analyze-page .field-row textarea{font-size:14px;}
+ .analyze-page .jumbo {min-height:57px;font-size:17px;}
+ .analyze-page .form-trust{font-size:12px;}
+}
+@media (max-width:520px) {
+ .analyze-page { padding-top:18px; }
+ .analyze-page .progress-nav{ justify-content:flex-start; margin:0 0 27px; gap:11px; font-size:11px; }
+ .analyze-page .progress-nav>div{gap:8px;}
+ .analyze-page .progress-nav>div b{height:29px;width:29px;font-size:12px;}
+ .analyze-page .progress-nav>i{width:37px;}
+ .analyze-page .workspace-heading{margin-bottom:21px;}
+ .analyze-page .workspace-heading h1{font-size:clamp(31px,8.45vw,39px);line-height:1.12;letter-spacing:-.056em;margin-bottom:11px;}
+ .analyze-page .workspace-heading p{font-size:14px;line-height:1.55;}
+ .analyze-page .product-form{padding:22px 17px 19px;border-radius:24px;}
+ .analyze-page .field-row{gap:12px;margin-bottom:22px;}
+ .analyze-page .field-icon{width:43px;height:43px;border-radius:14px;}
+ .analyze-page .field-icon svg{width:21px;height:21px;}
+ .analyze-page .field-row label{font-size:13px;line-height:1.55;}
+ .analyze-page .field-row label small{font-size:11px;}
+ .analyze-page .field-row input,.analyze-page .field-row textarea{padding:13px 12px; font-size:12px;min-height:48px;margin-top:6px;border-radius:12px;}
+ .analyze-page .field-row textarea{min-height:93px;}
+ .analyze-page .manual-details{margin:0 0 19px; padding:13px;}
+ .analyze-page .jumbo{min-height:56px;font-size:15px;gap:8px;padding:12px 7px;}
+ .analyze-page .jumbo svg{width:17px;height:17px;}
+ .analyze-page .form-trust{margin-top:17px;gap:8px;justify-content:center;font-size:10px;flex-wrap:wrap;}
+ .analyze-page .form-trust svg{height:15px;width:15px;}
+}
+@media (max-width:365px) {
+ .analyze-page .product-form{padding:20px 13px;}
+ .analyze-page .field-row{gap:10px;}
+ .analyze-page .field-icon{width:38px;height:38px;}
+ .analyze-page .jumbo{font-size:13px;}
+}
+
+/* Final screen-alignment refinements */
+@media (min-width:851px) {
+ .analyze-page .workspace-heading{margin-bottom:34px;}
+ .analyze-page .product-form{padding-top:38px;padding-bottom:34px;}
+ .analyze-page .field-row{margin-bottom:38px;}
+}
+@media (max-width:520px) {
+ .analyze-page .progress-nav{gap:13px;}
+ .analyze-page .progress-nav>i{flex:0 1 60px;max-width:60px;}
+ .analyze-page .progress-nav>div{white-space:nowrap;}
+}
