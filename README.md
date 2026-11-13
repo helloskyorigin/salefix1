@@ -56,3 +56,13 @@ The audit is intentionally open for internal tests, but **add durable per-IP/use
 - Mobile-first responsive layout
 - No account requirement for free audits
 
+
+## Verified-purchase Sales Kit screen
+
+The `#/kit?access=<SIGNED_TOKEN>` route is a secure customer workspace, not a public preview. The frontend sends the token in the `Authorization` header to `/api/paid-kit`. That endpoint verifies a server-side HMAC signature and expiry using `SALEFIX_KIT_SECRET` (minimum 32 characters). Without configuration or a valid token, access is denied.
+
+The kit currently includes editable sales-page copy and downloadable HTML; 10 editable marketing posts; 3 SVG graphics; buyer replies; a 7-day plan; and a single ZIP export. Edits are saved only in that browser and are **not** synced across devices. Source text is reviewed with grounded, deterministic templates; there is no claim of revenue or proven conversions. One-click hosted publishing is not active.
+
+**Payment integration is still missing.** `/api/checkout` remains disabled. Never issue tokens from a public endpoint or from client-supplied `verifiedProviderEvent` fields. Only invoke `issueKitAccess` server-side after checking a completed $49 USD payment via a **cryptographically verified provider webhook**, and email the resulting link to its purchaser. The signed link currently expires after 7 days; before charging customers, add a secure email reissue mechanism (and persistent purchase records) so they can regain access without logging in. The local server supports `/api/paid-kit` with the same access validation.
+
+For security, do not put actual payment tokens, private email addresses, or `SALEFIX_KIT_SECRET` in Git. The paid workspace cannot be used by customers until the payment verification, secure link delivery, reissue and support processes are connected and tested.

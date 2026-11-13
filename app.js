@@ -1,4 +1,5 @@
 import {legalContent, SUPPORT_EMAIL} from './legal-content.js';
+import {kitShell, hydrateKit} from './kit-dashboard.js';
 const $=s=>document.querySelector(s);
 const safe=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 const paths={
@@ -191,9 +192,10 @@ function checkout(){const r=state.results;return `${header(true)}<main class="co
 function legal(which){return `${header(true)}${legalContent(which)}${footer()}`;}
 function routeFromHash(){let hash=location.hash.replace(/^#\/?/,'');if(hash.startsWith('#'))hash=hash.slice(1);return hash.split('?')[0]}
 let lastRenderedHash="";
-function render(){lastRenderedHash=location.hash;const route=routeFromHash();document.title=`${route==='analyze'?'Analyze product — ':route==='loading'?'Analyzing — ':route==='results'?'Your audit — ':route==='privacy'?'Privacy Policy — ':route==='terms'?'Terms of Service — ':route==='refunds'?'Refund Policy — ':route==='contact'?'Contact — ':''}SaleFix`;
+function render(){lastRenderedHash=location.hash;const route=routeFromHash();document.title=`${route==='analyze'?'Analyze product — ':route==='loading'?'Analyzing — ':route==='results'?'Your audit — ':route==='kit'?'Your Sales Kit — ':route==='privacy'?'Privacy Policy — ':route==='terms'?'Terms of Service — ':route==='refunds'?'Refund Policy — ':route==='contact'?'Contact — ':''}SaleFix`;
 document.body.dataset.page=(route===''||route.startsWith('#'))?'landing':'workspace';
-const ui=route==='analyze'?analyze():route==='loading'?loading():route==='results'?showResult():route==='checkout'?checkout():['privacy','terms','refunds','contact'].includes(route)?legal(route):landing();$('#app').innerHTML=ui;
+const ui=route==='analyze'?analyze():route==='loading'?loading():route==='results'?showResult():route==='checkout'?checkout():route==='kit'?kitShell():['privacy','terms','refunds','contact'].includes(route)?legal(route):landing();$('#app').innerHTML=ui;
+if(route==='kit')hydrateKit();
 if(route==='loading'&&!state.analyzing){ if(state.results)nav('results');else nav('analyze') }
 if(route===''||route.startsWith('#')){const anchor=route.slice(1);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:'smooth'}),50)} }
 function showAnalyzeError(message,openManual=false){state.error=String(message||'Unable to analyze this product.');state.analyzing=false;if(openManual)state.showManualDetails=true;nav('analyze');}
