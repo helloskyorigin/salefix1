@@ -55,3 +55,4 @@ The audit is intentionally open for internal tests, but **add durable per-IP/use
 - Approved icon: `assets/salefix-logo.png`
 - Mobile-first responsive layout
 - No account requirement for free audits
+

@@ -1,0 +1,8 @@
+{
+  "name": "salefix-mvp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "dev": "node local-server.js", "start": "node local-server.js", "test": "node --test tests/*.test.js" },
+  "engines": {"node": ">=20"}
+}
