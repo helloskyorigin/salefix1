@@ -67,3 +67,9 @@
  .lf-explain-note a{margin-left:0;grid-column:2;font-size:11.5px}
 }
 @media(prefers-reduced-motion:reduce){.lf-explain *, .lf-inside *{animation:none!important;transition:none!important}}
+
+/* Optional product URL: clear path for products without a website link. */
+.lf-manual-link{display:inline-flex;margin-top:12px;color:#2359d8;font-size:13px;font-weight:700;line-height:1.5;text-decoration:none}
+.lf-manual-link:hover{text-decoration:underline}
+.lf-manual-link:focus-visible{outline:3px solid #3577ff;outline-offset:4px;border-radius:4px}
+@media(max-width:650px){.lf-manual-link{font-size:12px;max-width:100%;margin-top:14px}}
