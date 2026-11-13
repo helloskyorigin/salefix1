@@ -80,3 +80,17 @@
 @media(max-width:370px){.scan-workspace{width:calc(100% - 24px)}.scan-progress{gap:6px;font-size:10px}.scan-progress-dot{width:25px;height:25px;font-size:11px}.scan-progress-step{gap:5px}.scan-panel{padding:17px 13px}.scan-checklist-row{gap:8px;font-size:11.5px}.scan-row-tag{font-size:9px;padding:4px 5px}.scan-art{height:180px}}
 @media(prefers-reduced-motion:reduce){.scan-art-beam,.scan-row-spinner,.scan-live-status>i{animation:none}}
 @media(max-width:370px){.scan-progress{font-size:9px;gap:4px}.scan-progress-step{gap:4px}.scan-progress-step.current{padding-right:2px}.scan-progress-dot{height:24px;width:24px}}
+
+/* Loading screen: accessible cancel path and safe, mobile-first spacing. */
+.scan-cancel-button{display:inline-flex;align-items:center;justify-content:center;margin-top:15px;min-height:44px;padding:9px 20px;border:0;background:#eff3ff;color:#315bb7;font-size:13px;font-weight:750;border-radius:999px;transition:background .2s,color .2s}
+.scan-cancel-button:hover{background:#e0eaff;color:#1646a5}
+.scan-cancel-button:focus-visible{outline:3px solid #3778ff;outline-offset:3px}
+.scan-progress{max-width:100%}
+.scan-progress-step{min-width:0}
+.scan-checklist-row>span:nth-child(2){min-width:0;overflow-wrap:break-word}
+.scan-panel,.scan-grid,.scan-criteria-card,.scan-product-card{min-width:0}
+@media(max-width:600px){.scan-progress{max-width:100%;gap:5px}.scan-progress-step{gap:4px;font-size:10.5px}.scan-progress-step.current{padding:2px 4px 2px 0}.scan-progress-line{min-width:4px}.scan-copy h1{overflow-wrap:break-word}.scan-panel-header{flex-wrap:wrap}.scan-checklist-row{gap:9px}.scan-row-tag{margin-left:auto}.scan-cancel-button{width:100%;font-size:13px;margin-top:15px}.scan-side{display:none!important}}
+@media(max-width:370px){.scan-progress-step{font-size:9px;gap:3px}.scan-progress-dot{width:23px;height:23px}.scan-checklist-row{flex-wrap:wrap;padding:10px 0}.scan-row-tag{margin-left:32px}.scan-copy h1{font-size:26px}}
+@media(prefers-reduced-motion:reduce){.scan-cancel-button{transition:none}}
+/* Narrow-phone pass: keep the in-progress row from wrapping awkwardly. */
+@media(max-width:370px){.scan-checklist-row{flex-wrap:nowrap;min-height:53px;padding:5px 0;align-items:center;gap:9px}.scan-checklist-row>span:nth-child(2){flex:1;font-size:11px}.scan-row-tag{display:none}}
