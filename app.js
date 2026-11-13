@@ -102,14 +102,26 @@ return `${header()}
     </article>
   </section>
 
-  <section class="container lf-how" id="how">
-    <div class="lf-how-intro"><h2>How SaleFix Works</h2><p>Turn your product link into a ready-to-share campaign in 3 simple steps.</p></div>
-    <div class="lf-how-steps">
-      <div class="surface lf-how-step"><span class="lf-step-icon">${icon('link',23)}</span><h3>1. Paste Your Link</h3><p>Add your product link (Gumroad, Payhip, etc.)</p></div>
-      <span class="lf-step-arrow">${icon('arrow',20)}</span>
-      <div class="surface lf-how-step"><span class="lf-step-icon purple">${icon('spark',23)}</span><h3>2. Get a Free Audit</h3><p>See key issues and a before/after preview.</p></div>
-      <span class="lf-step-arrow">${icon('arrow',20)}</span>
-      <div class="surface lf-how-step"><span class="lf-step-icon">${icon('bolt',23)}</span><h3>3. Prepare Your Launch</h3><p>See the planned $49 Sales Kit. Paid delivery is not yet active.</p></div>
+  <section class="container lf-explain" id="how" aria-labelledby="lf-explain-title">
+    <div class="lf-explain-heading">
+      <div><span class="lf-detail-kicker">${icon('spark',15)} THE PROCESS</span><h2 id="lf-explain-title">How does <span>SaleFix</span> work?</h2></div>
+      <p>A simple path from your current product link to clear, specific improvements. Start for free—no signup or card needed.</p>
+    </div>
+    <div class="lf-explain-grid">
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('link',22)}</span><span class="lf-step-index">01</span></div><h3>Share your product link</h3><p>Paste the public page for your ebook, guide, template, course or other digital product.</p><span class="lf-step-foot">Gumroad · Payhip · Your website</span></article>
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon violet">${icon('scan',22)}</span><span class="lf-step-index">02</span></div><h3>We review your offer</h3><p>SaleFix reads the accessible page text to look for unclear headlines, missing benefits and confusing purchase actions.</p><span class="lf-step-foot">Based on available content</span></article>
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon green">${icon('eye',22)}</span><span class="lf-step-index">03</span></div><h3>Get a free action plan</h3><p>See up to three findings, why they matter, and a suggested headline with a before-and-after view.</p><span class="lf-step-foot">Real findings · No fake scores</span></article>
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('layers',22)}</span><span class="lf-step-index">04</span></div><h3>Go further with the full kit</h3><p>The planned $49 kit brings together editable sales copy, marketing posts, graphics and buyer replies.</p><span class="lf-step-foot">Paid checkout coming later</span></article>
+    </div>
+    <div class="lf-explain-note surface"><span class="lf-note-icon">${icon('shield',20)}</span><p><strong>What if a site blocks scanning?</strong> You can add your actual product description manually. The report will tell you which information it used.</p><a href="#/analyze">Try free analysis ${icon('arrow',17)}</a></div>
+  </section>
+
+  <section class="container lf-inside" aria-labelledby="lf-inside-title">
+    <div class="lf-inside-heading"><span class="lf-detail-kicker">${icon('scan',15)} INSIDE YOUR FREE AUDIT</span><h2 id="lf-inside-title">More clarity. <span>Less guesswork.</span></h2><p>SaleFix focuses on what a potential buyer can understand from your product page—not invented sales estimates.</p></div>
+    <div class="lf-inside-grid">
+      <article class="surface lf-inside-card"><span class="lf-detail-icon violet">${icon('text',21)}</span><h3>Offer clarity</h3><p>Does your headline explain what the product does and who it helps?</p><small>${icon('checkcircle',15)} Clearer headline ideas</small></article>
+      <article class="surface lf-inside-card"><span class="lf-detail-icon blue">${icon('layers',21)}</span><h3>Benefits &amp; details</h3><p>Can buyers quickly see what is included and why it matters to them?</p><small>${icon('checkcircle',15)} Specific copy suggestions</small></article>
+      <article class="surface lf-inside-card"><span class="lf-detail-icon green">${icon('arrow',21)}</span><h3>Buying clarity</h3><p>Are the offer, price and next purchase step easy to recognize?</p><small>${icon('checkcircle',15)} Actionable improvement tips</small></article>
     </div>
   </section>
 
@@ -134,6 +146,8 @@ return `${header()}
       ${faqItem(1,'Do I need to sign up?','No login is required for the free audit. Paid publishing will use secure passwordless access after launch.')}
       ${faqItem(2,'How will I get access after payment?','Once checkout is available, paid customers will receive a secure email link to their kit. Payments are disabled until delivery is ready.')}
       ${faqItem(3,'Can I use it for multiple products?','The planned $49 purchase covers one product campaign kit. You can run a new free audit for another product.')}
+      ${faqItem(4,'What if SaleFix cannot read my page?','If a page blocks automated access, use the manual product-description field. Results will be based on the real text you supply.')}
+      ${faqItem(5,'Does a good audit mean I will make more sales?','No. The audit checks the clarity of visible product copy and provides improvement ideas. It cannot predict or verify future sales.')}
     </article>
   </section>
 </main>${footer()}`;
