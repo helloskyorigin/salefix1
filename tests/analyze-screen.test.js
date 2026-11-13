@@ -20,4 +20,14 @@ test('Analyze screen preserves inputs and shows manual fallback when a page is b
   assert.match(app.innerHTML,/id="manual-details" class="manual-details" open/);
   assert.match(app.innerHTML,/value="Creators"/);
   assert.match(app.innerHTML,/Build a simple website/);
+  let aborted=false;
+  globalThis.fetch=async (_url,opts)=>new Promise((_resolve,reject)=>{
+    opts.signal.addEventListener('abort',()=>{aborted=true;reject(new Error('aborted'));});
+  });
+  events.submit({target:{id:'analyze-form',values},preventDefault(){}});
+  assert.equal(location.hash,'#/loading');
+  location.hash='#/analyze';events.hashchange();
+  assert.equal(aborted,true);
+  assert.equal(location.hash,'#/analyze');
+  assert.match(app.innerHTML,/Analyze My Product/);
 });
