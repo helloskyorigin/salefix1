@@ -1,0 +1,51 @@
+/* Progressive, one-time scroll reveals. Content remains visible without JavaScript. */
+@media (prefers-reduced-motion: no-preference) {
+  html.sf-motion-ready .landing-page .sf-once:not(.sf-visible) {
+    opacity: 0;
+    transform: translate3d(0, 19px, 0);
+  }
+  html.sf-motion-ready .landing-page .sf-once {
+    transition: opacity 650ms cubic-bezier(.21,.75,.26,1), transform 650ms cubic-bezier(.21,.75,.26,1);
+    transition-delay: var(--sf-delay, 0ms);
+  }
+  html.sf-motion-ready .landing-page .sf-once.sf-visible {
+    opacity: 1;
+    transform: translate3d(0,0,0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-page .sf-once {opacity: 1 !important;transform: none !important;transition: none !important;}
+}
+/* Hero images were layered on top of each other on several desktop widths.
+   A single, unrotated kit card is clearer, cleaner and collision-free. */
+@media (min-width: 821px) {
+  .landing-page .lf-hero {grid-template-columns: minmax(0,1.17fr) minmax(0,.83fr);gap:30px;}
+  .landing-page .lf-hero-art {height:auto;min-height:280px;display:grid;place-items:center;overflow:visible;}
+  .landing-page .lf-art-checklist {
+    position:relative;inset:auto;transform:none;z-index:1;
+    width:min(100%,315px);min-height:0;padding:22px 23px;
+    box-shadow:0 20px 48px rgba(48,65,140,.11)!important;
+  }
+  .landing-page .lf-art-heading {font-size:14px;margin-bottom:18px;white-space:normal;}
+  .landing-page .lf-art-checklist>div:not(.lf-art-heading) {font-size:12px;white-space:normal;margin:13px 0;}
+  .landing-page .lf-art-page {display:none;}
+  .landing-page .lf-art-halo {inset:5px;}
+}
+/* Do not let decorative artwork or short text push cards into each other. */
+.landing-page .lf-feature,.landing-page .lf-how-step,.landing-page .lf-compare-side,
+.landing-page .lf-publish-copy,.landing-page .lf-publish-browser,
+.landing-page .lf-price-action {min-width:0;}
+.landing-page .lf-publish-browser {max-width:100%;}
+@media(max-width:820px) {
+  .landing-page .lf-hero-art {display:none;}
+  .landing-page .lf-mobile-proof {isolation:isolate;}
+  .landing-page .lf-mobile-proof-mini {min-width:0;}
+  .landing-page .lf-mini-lines {min-width:0;}
+  .landing-page .lf-compare-after {min-width:0;}
+}
+@media(max-width:370px){
+  .landing-page .lf-mobile-proof-mini {gap:10px;padding:12px;}
+  .landing-page .lf-mini-icon {width:60px;height:65px;}
+  .landing-page .lf-mini-lines strong {font-size:13px;overflow-wrap:anywhere;}
+  .landing-page .lf-feature-strip {gap:9px;}
+}
