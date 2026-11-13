@@ -7,7 +7,7 @@
   const selectors = [
     '.lf-hero-copy', '.lf-hero-art', '.lf-mobile-proof',
     '.lf-feature', '.lf-audit-card', '.lf-comparison-card',
-    '.lf-how-intro', '.lf-how-step',
+    '.lf-explain-heading', '.lf-explain-step', '.lf-explain-note', '.lf-inside-heading', '.lf-inside-card',
     '.lf-publish-copy', '.lf-publish-browser', '.lf-price', '.lf-faq'
   ];
   const observer = new IntersectionObserver(entries => {
