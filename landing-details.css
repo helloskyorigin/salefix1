@@ -1,0 +1,69 @@
+/* SaleFix walkthrough + free audit detail. All sections are borderless, like the existing iOS-style landing. */
+.lf-explain,.lf-inside{min-width:0}
+.lf-explain{margin-top:34px}
+.lf-explain-heading,.lf-inside-heading{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:20px}
+.lf-detail-kicker{display:inline-flex;align-items:center;gap:7px;background:#e9efff;border-radius:100px;padding:7px 12px;font-size:10px;letter-spacing:.045em;font-weight:820;color:#145ce0}
+.lf-explain-heading h2,.lf-inside-heading h2{font-size:clamp(28px,3vw,37px);line-height:1.13;letter-spacing:-.057em;margin-top:12px}
+.lf-explain-heading h2 span,.lf-inside-heading h2 span{color:#0756f5}
+.lf-explain-heading>p,.lf-inside-heading>p{max-width:365px;font-size:13px;line-height:1.65;color:#59657e}
+.lf-explain-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.lf-explain-step{min-height:225px;padding:21px 19px 18px;display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.lf-step-top{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin-bottom:21px}
+.lf-detail-icon{width:43px;height:43px;display:grid;place-items:center;border-radius:14px;flex:none}
+.lf-detail-icon.blue{color:#1764ed;background:#e8f0ff}
+.lf-detail-icon.violet{color:#8052e8;background:#f2eaff}
+.lf-detail-icon.green{color:#119a55;background:#e5f8ee}
+.lf-step-index{color:#b5c0dd;font-size:24px;letter-spacing:-.07em;font-weight:850}
+.lf-explain-step h3{font-size:16px;line-height:1.26;letter-spacing:-.037em;font-weight:800;margin-bottom:9px}
+.lf-explain-step p{font-size:12px;line-height:1.58;color:#4e5a74}
+.lf-step-foot{font-size:10px;font-weight:760;color:#1a5ce6;margin-top:auto;padding-top:14px}
+.lf-explain-note{margin-top:14px;padding:16px 19px;display:flex;align-items:center;gap:13px}
+.lf-note-icon{width:38px;height:38px;border-radius:13px;background:#eaf3ff;color:#1764ea;display:grid;place-items:center;flex:none}
+.lf-explain-note p{font-size:12px;line-height:1.5;color:#52607d;flex:1}
+.lf-explain-note p strong{color:#132043}
+.lf-explain-note a{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:790;color:#0756f5;white-space:nowrap}
+.lf-explain-note a:hover{text-decoration:underline}
+.lf-inside{margin-top:34px}
+.lf-inside-heading{align-items:end}
+.lf-inside-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.lf-inside-card{padding:21px 20px 19px;display:flex;flex-direction:column;align-items:flex-start;min-height:175px}
+.lf-inside-card .lf-detail-icon{height:39px;width:39px;border-radius:13px;margin-bottom:15px}
+.lf-inside-card h3{font-size:16px;font-weight:820;letter-spacing:-.035em;margin-bottom:6px}
+.lf-inside-card p{font-size:12px;line-height:1.58;color:#586680;margin-bottom:15px}
+.lf-inside-card small{display:flex;align-items:center;gap:7px;color:#0c9250;font-weight:730;font-size:11px;margin-top:auto}
+@media(max-width:1130px) and (min-width:821px){.lf-explain-grid{gap:10px}.lf-explain-step{padding:17px 14px}.lf-explain-step h3{font-size:14px}.lf-explain-step p{font-size:11px}}
+@media(max-width:820px){
+ .lf-explain,.lf-inside{margin-top:33px}
+ .lf-explain-heading,.lf-inside-heading{display:block;margin-bottom:17px}
+ .lf-explain-heading h2,.lf-inside-heading h2{font-size:28px;margin-top:12px}
+ .lf-explain-heading>p,.lf-inside-heading>p{margin-top:10px;font-size:13px;max-width:480px;line-height:1.55}
+ .lf-explain-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .lf-explain-step{padding:17px 16px;min-height:205px;border-radius:20px!important}
+ .lf-step-top{margin-bottom:12px}
+ .lf-explain-step h3{font-size:15px}
+ .lf-explain-step p{font-size:12px}
+ .lf-explain-note{margin-top:13px;flex-wrap:wrap;gap:11px;padding:17px}
+ .lf-explain-note p{flex:1 1 calc(100% - 60px);font-size:12px}
+ .lf-explain-note a{margin-left:51px}
+ .lf-inside-grid{grid-template-columns:1fr 1fr;gap:12px}
+ .lf-inside-card{padding:18px 17px;min-height:175px}
+}
+@media(max-width:520px){
+ .lf-explain-heading h2,.lf-inside-heading h2{font-size:27px}
+ .lf-explain-grid,.lf-inside-grid{grid-template-columns:1fr;gap:11px}
+ .lf-explain-step{min-height:0;display:grid;grid-template-columns:43px minmax(0,1fr);gap:4px 13px;padding:17px 16px}
+ .lf-step-top{grid-row:1/4;grid-column:1;width:43px;align-items:start;justify-content:start;margin:0}
+ .lf-step-index{display:none}
+ .lf-explain-step h3{grid-column:2;font-size:15px;margin-top:1px;margin-bottom:2px}
+ .lf-explain-step p{grid-column:2;font-size:12px;line-height:1.49}
+ .lf-step-foot{grid-column:2;padding-top:5px;font-size:10px}
+ .lf-inside-card{min-height:0;padding:17px;display:grid;grid-template-columns:39px minmax(0,1fr);gap:4px 13px}
+ .lf-inside-card .lf-detail-icon{grid-column:1;grid-row:1/4;margin:0}
+ .lf-inside-card h3{grid-column:2;margin:0}
+ .lf-inside-card p{grid-column:2;font-size:12px;margin:0}
+ .lf-inside-card small{grid-column:2;margin:4px 0 0}
+ .lf-explain-note{display:grid;grid-template-columns:35px minmax(0,1fr);gap:8px 12px}
+ .lf-explain-note p{font-size:11.5px}
+ .lf-explain-note a{margin-left:0;grid-column:2;font-size:11.5px}
+}
+@media(prefers-reduced-motion:reduce){.lf-explain *, .lf-inside *{animation:none!important;transition:none!important}}
