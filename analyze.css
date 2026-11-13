@@ -128,3 +128,42 @@
  .analyze-page .progress-nav>i{flex:0 1 60px;max-width:60px;}
  .analyze-page .progress-nav>div{white-space:nowrap;}
 }
+
+/* Analyze screen audit: form legibility, error recovery and distinct mobile layout. */
+.analyze-page .form-layout > *,
+.analyze-page .field-row label { min-width:0; }
+.analyze-page .field-row input,
+.analyze-page .field-row textarea { display:block; width:100%; max-width:100%; }
+.analyze-page .analyze-input-hint { display:block; margin-top:7px; font-size:12px; font-weight:500; color:#73809c; }
+.analyze-page .analyze-error { display:flex; align-items:flex-start; gap:10px; font-size:14px; line-height:1.5; margin-bottom:24px; padding:15px 16px; }
+.analyze-page .analyze-error svg { flex:none; margin-top:1px; }
+.analyze-page .manual-details summary { min-height:38px; }
+.analyze-page .manual-details input,
+.analyze-page .manual-details textarea { width:100%; max-width:100%; }
+@media(max-width:650px){
+  .analyze-page .form-layout { width:100%; }
+  .analyze-page .product-form { padding:20px 18px 22px; }
+  .analyze-page .field-icon { display:none; }
+  .analyze-page .field-row { display:block; margin-bottom:23px; }
+  .analyze-page .field-row label { display:block; font-size:14px; line-height:1.45; }
+  .analyze-page .field-row input,
+  .analyze-page .field-row textarea,
+  .analyze-page .manual-details input,
+  .analyze-page .manual-details textarea { font-size:16px; line-height:1.45; }
+  .analyze-page .field-row input { min-height:52px; }
+  .analyze-page .field-row textarea { min-height:105px; }
+  .analyze-page .manual-details { margin:0 0 18px; }
+  .analyze-page .manual-details summary { min-height:44px; font-size:13px; }
+  .analyze-page .jumbo { white-space:normal; min-height:56px; font-size:16px; line-height:1.25; }
+  .analyze-page .form-trust { gap:9px 17px; font-size:11px; }
+  .analyze-page .progress-nav { justify-content:center; gap:8px; margin-bottom:25px; }
+  .analyze-page .progress-nav>div { min-width:0; gap:7px; font-size:11px; white-space:nowrap; }
+  .analyze-page .progress-nav>i { flex:0 1 36px; width:auto; min-width:12px; }
+  .analyze-page .progress-nav>div.on { padding:0; background:none; }
+}
+@media(max-width:360px){
+  .analyze-page .progress-nav>div { gap:5px; font-size:10px; }
+  .analyze-page .progress-nav>div b { width:26px; height:26px; }
+  .analyze-page .product-form { padding:18px 15px 19px; }
+  .analyze-page .jumbo { font-size:14px; }
+}
