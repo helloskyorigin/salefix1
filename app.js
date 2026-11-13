@@ -35,26 +35,108 @@ function mockMiniPage(after=false){return browserWindow(`<div class="mini-page $
 function sectionHeading(eyebrow,title,subtitle){return `<div class="section-head"><span class="eyebrow">${eyebrow}</span><h2>${title}</h2><p>${subtitle}</p></div>`}
 function landing(){
 return `${header()}
-<main>
- <section class="hero container"><div class="hero-copy"><div class="eyebrow pill softblue">${icon('spark',16)} AI-powered offer improvement</div><h1>Make your product <span>easier to buy.</span></h1><p>Your product deserves a clearer offer. Audit your sales page for free, see real improvement ideas, and create a launch-ready kit.</p>
- <form id="hero-form" class="hero-form surface"><label class="sr-only" for="hero-url">Your public digital product URL</label>${icon('link',21)}<input id="hero-url" type="url" required maxlength="1200" placeholder="Paste your Gumroad, Payhip or product link" autocomplete="url" value="${safe(state.url)}"/><button class="button button-primary" type="submit">Analyze for free ${icon('arrow',18)}</button></form>
- <div class="tiny-trust"><span>${icon('checkcircle',16)} No signup</span><span>${icon('checkcircle',16)} Free audit</span><span>${icon('checkcircle',16)} No credit card</span></div>
- </div>
- <div class="hero-visual" aria-label="Illustrative SaleFix sales kit"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="floating-sales surface"><div class="floating-label">${icon('spark',17)} Your sales kit</div><div class="kit-row">${icon('checkcircle',17)} Clearer headline</div><div class="kit-row">${icon('checkcircle',17)} Rewritten sales copy</div><div class="kit-row">${icon('checkcircle',17)} Marketing post ideas</div><div class="kit-row">${icon('checkcircle',17)} Shareable sales page</div></div><div class="floating-browser surface">${browserWindow(`<div class="hero-product"><div class="fake-product-cover">${icon('bolt',40)}</div><div class="fake-product-copy"><strong>Your digital product</strong><i></i><i class="short"></i><span class="mock-cta">Get the product</span></div></div>`)}</div><div class="floating-bubble">${icon('spark',16)} From audit to launch</div></div>
- </section>
- <section class="container" id="features"><div class="feature-strip surface"><div>${icon('scan',25)}<span><strong>Sales audit</strong><small>See what's unclear</small></span></div><div>${icon('layers',25)}<span><strong>Sales page builder</strong><small>Improve your offer</small></span></div><div>${icon('megaphone',25)}<span><strong>Marketing kit</strong><small>Posts & replies</small></span></div><div>${icon('globe',25)}<span><strong>One-click publish*</strong><small>Live page at launch</small></span></div></div></section>
- <section class="container section-space" id="preview">${sectionHeading('REAL VALUE BEFORE YOU PAY','See the difference before you unlock.','The free audit identifies issues based on your public sales page. Below is an illustrative layout — not a live result.')}
- <div class="preview-grid"><article class="surface audit-card"><span class="pill lightgreen">Free audit preview</span><h3>Spot what needs fixing.</h3><p>Insights linked to the words and details on your actual page.</p><div class="audit-demo-item">${icon('alert',20)}<span>Does the headline explain the benefit?</span></div><div class="audit-demo-item">${icon('alert',20)}<span>Can buyers understand what's included?</span></div><div class="audit-demo-item">${icon('alert',20)}<span>Is the next step to purchase clear?</span></div><div class="tip-tile"><span>${icon('spark',16)} Improvement preview</span><strong>Turn a vague title into a specific, honest benefit.</strong></div></article>
- <article class="surface comparison-card"><div class="comparison-title"><h3>Before & after</h3><p>A clearer first impression for potential buyers.</p></div><div class="comparison-panels"><div><span class="tag tag-red">Before</span>${mockMiniPage(false)}</div><div class="swap-arrow">${icon('arrow',20)}</div><div><span class="tag tag-green">After</span>${mockMiniPage(true)}</div></div><p class="preview-note">Example only. Real analysis uses your submitted product content.</p></article></div></section>
- <section class="container section-space" id="how">${sectionHeading('THREE SIMPLE STEPS','From product link to a stronger offer.','No account to create. Start with an honest, actionable audit.')}
- <div class="steps-grid"><div class="surface step-card"><span class="step-icon">${icon('link',26)}</span><span class="step-num">01</span><h3>Paste your product link</h3><p>Use a public sales page, or supply product copy if the site blocks access.</p></div><div class="surface step-card"><span class="step-icon purple">${icon('scan',26)}</span><span class="step-num">02</span><h3>See your free audit</h3><p>Get up to three evidence-based findings and a headline improvement.</p></div><div class="surface step-card"><span class="step-icon blue">${icon('spark',26)}</span><span class="step-num">03</span><h3>Unlock & launch</h3><p>Get the complete sales kit and a publishable product page once checkout is enabled.</p></div></div></section>
- <section class="container section-space"><div class="spotlight surface"><div><span class="eyebrow pill softblue">${icon('bolt',17)} GAME-CHANGER</span><h2>Your sales page, <span>ready to share.</span></h2><p>SaleFix Live will let customers publish a focused page with a direct link to their own checkout. No need for an extra login just to run a free audit.</p><div class="spotlight-bullets"><span>${icon('checkcircle',17)} Mobile-friendly sales page</span><span>${icon('checkcircle',17)} Your existing checkout link</span><span>${icon('checkcircle',17)} Simple publishing flow</span></div><small>Publishing requires secure ownership verification and will be enabled after payment integration is tested.</small></div><div class="spotlight-preview">${browserWindow(`<div class="address-bar">${icon('link',13)} salefix.app/p/your-product</div><div class="site-preview"><div class="purple-cover">${icon('spark',32)}</div><div><strong>Your product, clearly explained.</strong><p>A simple, focused page your visitors can understand.</p><span class="mock-cta">Visit checkout</span></div></div>` )}<span class="concept-label">Concept preview</span></div></div></section>
- <section class="container section-space" id="pricing">${sectionHeading('SIMPLE PRICING','One product. One price.','Preview your analysis for free. Unlock the complete toolkit when checkout goes live.')}
- <div class="price-card surface"><div class="price-left"><span class="eyebrow">FULL SALEFIX KIT</span><div class="price-main">$49 <span>one-time</span></div><p>Made for digital product creators who want an actionable campaign, not another generic prompt pack.</p></div><div class="price-features"><span>${icon('checkcircle',18)} Full sales audit</span><span>${icon('checkcircle',18)} Improved page copy</span><span>${icon('checkcircle',18)} 10 promotional post drafts</span><span>${icon('checkcircle',18)} 3 graphic concepts</span><span>${icon('checkcircle',18)} Buyer reply templates</span><span>${icon('checkcircle',18)} Publishing (after setup)</span></div><div class="price-action"><a class="button button-primary" href="#/analyze">Start with free audit ${icon('arrow',18)}</a><span>${icon('shield',15)} No subscription</span></div></div></section>
- <section class="container section-space" id="faq">${sectionHeading('A FEW QUESTIONS','Frequently asked questions.','The important stuff, without the fine-print maze.')}
- <div class="faq-list">${faqItem(0,'Which product links work?','SaleFix tries to read public HTML sales pages such as Gumroad, Payhip and independent sites. Pages that block crawlers can be analyzed using manually pasted product copy.')}${faqItem(1,'Do I need to sign up?','No signup is needed for the free analysis. When paid publishing is released, secure email-based access will be used to manage live pages.')}${faqItem(2,'Does SaleFix guarantee more sales?','No. It improves offer clarity and makes useful assets easier to create. Actual sales depend on your product, audience, positioning and distribution.')}${faqItem(3,'Can I buy the $49 kit now?','Payment is being connected. SaleFix will not accept money until paid access and delivery are ready and tested.')}</div></section>
- </main>${footer()}`;
+<main class="landing-page">
+  <section class="container lf-hero" aria-labelledby="landing-title">
+    <div class="lf-hero-copy">
+      <span class="pill softblue lf-kicker">${icon('spark',15)} AI-Powered Sales Optimization</span>
+      <h1 id="landing-title">Turn your product into a <span>better-selling</span> offer.</h1>
+      <p>Get a free AI audit of your digital product, see what's holding back sales, and unlock a complete sales &amp; marketing kit.</p>
+      <form class="lf-url-bar" id="hero-form">
+        <label for="hero-url" class="sr-only">Your public product link</label>
+        <span class="lf-url-icon">${icon('link',17)}</span>
+        <input id="hero-url" type="url" required maxlength="1200" placeholder="Paste your product link (Gumroad, Payhip, etc.)" autocomplete="url" value="${safe(state.url)}" />
+        <button type="submit" class="button button-primary">Analyze for Free ${icon('arrow',18)}</button>
+      </form>
+      <div class="lf-trust"><span>${icon('checkcircle',15)} No signup</span><span>${icon('checkcircle',15)} Free analysis</span><span>${icon('checkcircle',15)} No card required</span></div>
+    </div>
+    <div class="lf-hero-art" aria-label="Illustration of a SaleFix sales kit and product sales page">
+      <div class="lf-art-halo"></div>
+      <div class="lf-art-checklist surface">
+        <div class="lf-art-heading"><span class="lf-art-logo">${icon('bolt',16)}</span> <b>SaleFix: Your Sales Kit</b></div>
+        <div>${icon('layers',17)} Improved Sales Page <span class="lf-art-tick">${icon('check',13)}</span></div>
+        <div>${icon('text',17)} 10 Marketing Posts <span class="lf-art-tick">${icon('check',13)}</span></div>
+        <div>${icon('chart',17)} 3 Promotional Graphics <span class="lf-art-tick">${icon('check',13)}</span></div>
+        <div>${icon('person',17)} Reply Templates <span class="lf-art-tick">${icon('check',13)}</span></div>
+      </div>
+      <div class="lf-art-page surface">
+        <div class="lf-window-dots"><i></i><i></i><i></i></div>
+        <div class="lf-art-page-content"><div><strong>Your Product<br/>Sales Page</strong><i></i><i class="short"></i><span></span></div><div class="lf-art-product-icon">${icon('lock',28)}</div></div>
+      </div>
+    </div>
+    <div class="lf-mobile-proof" aria-label="What SaleFix can create">
+      <div class="lf-mobile-proof-top"><span class="lf-art-logo">${icon('bolt',15)}</span><strong>Your SaleFix kit</strong><span class="lf-proof-pill">Preview</span></div>
+      <div class="lf-mobile-proof-items"><span>${icon('checkcircle',17)} Improved sales copy</span><span>${icon('checkcircle',17)} Ready-to-post content</span></div>
+      <div class="lf-mobile-proof-mini"><span class="lf-mini-lines"><strong>Your better sales page</strong><i></i><i></i><small>Direct checkout link</small></span><span class="lf-mini-icon">${icon('spark',27)}</span></div>
+    </div>
+  </section>
+
+  <section class="container lf-features" id="features" aria-label="SaleFix features">
+    <div class="lf-feature-strip surface">
+      <div class="lf-feature"><span class="lf-feature-icon purple">${icon('bolt',25)}</span><div><strong>AI Sales Audit</strong><small>Find what to fix</small></div></div>
+      <div class="lf-feature"><span class="lf-feature-icon blue">${icon('layers',25)}</span><div><strong>Sales Page Builder</strong><small>A clearer sales page</small></div></div>
+      <div class="lf-feature"><span class="lf-feature-icon purple">${icon('megaphone',25)}</span><div><strong>Marketing Kit</strong><small>Posts, graphics &amp; replies</small></div></div>
+      <div class="lf-feature"><span class="lf-feature-icon blue">${icon('link',25)}</span><div><strong>One-Click Publish</strong><small>Planned for paid launch</small></div></div>
+    </div>
+  </section>
+
+  <section class="container lf-audit-and-compare" id="preview" aria-label="Free product audit and before and after example">
+    <article class="surface lf-audit-card">
+      <span class="pill lightgreen">Free Preview</span>
+      <h2>Your Product Audit</h2>
+      <p>Here's what we look for in your offer:</p>
+      <div class="lf-audit-issue">${icon('alert',18)} <span>Headline doesn't show the main benefit.</span></div>
+      <div class="lf-audit-issue">${icon('alert',18)} <span>Product details could be more specific.</span></div>
+      <div class="lf-audit-issue">${icon('alert',18)} <span>Purchase CTA needs to be clearer.</span></div>
+      <div class="lf-headline-tip"><span>${icon('spark',15)} Improved Headline Suggestion</span><strong>“Create Your First AI Agent with a Practical Step-by-Step Guide”</strong></div>
+      <small class="lf-sample-caption">Illustrative example — your audit uses your product.</small>
+    </article>
+    <article class="surface lf-comparison-card">
+      <h2>Before vs After</h2><p>See how SaleFix can improve your sales messaging.</p>
+      <div class="lf-compare-row">
+        <div class="lf-compare-side"><span class="tag tag-red">Before</span><div class="lf-compare-browser"><div class="lf-window-dots"><i></i><i></i><i></i></div><div class="lf-compare-before"><strong>My AI Guide<br/>Buy Now</strong><i></i><i></i><span class="lf-compare-cta muted">Buy Now</span></div></div></div>
+        <div class="lf-compare-arrow">${icon('arrow',19)}</div>
+        <div class="lf-compare-side"><span class="tag tag-green">After</span><div class="lf-compare-browser"><div class="lf-window-dots"><i></i><i></i><i></i></div><div class="lf-compare-after"><div><strong>Create Your First<br/>AI Agent</strong><p>A practical step-by-step guide to build, use and grow with AI agents.</p><span class="lf-compare-cta">Get the Guide</span></div><div class="lf-compare-cover">${icon('spark',28)}</div></div></div></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="container lf-how" id="how">
+    <div class="lf-how-intro"><h2>How SaleFix Works</h2><p>Turn your product link into a ready-to-share campaign in 3 simple steps.</p></div>
+    <div class="lf-how-steps">
+      <div class="surface lf-how-step"><span class="lf-step-icon">${icon('link',23)}</span><h3>1. Paste Your Link</h3><p>Add your product link (Gumroad, Payhip, etc.)</p></div>
+      <span class="lf-step-arrow">${icon('arrow',20)}</span>
+      <div class="surface lf-how-step"><span class="lf-step-icon purple">${icon('spark',23)}</span><h3>2. Get a Free Audit</h3><p>See key issues and a before/after preview.</p></div>
+      <span class="lf-step-arrow">${icon('arrow',20)}</span>
+      <div class="surface lf-how-step"><span class="lf-step-icon">${icon('bolt',23)}</span><h3>3. Unlock &amp; Publish</h3><p>Get your full kit and publish when available.</p></div>
+    </div>
+  </section>
+
+  <section class="container lf-publish-section">
+    <div class="lf-publish surface">
+      <div class="lf-publish-copy"><span class="pill softblue">🔥 Game-Changer Feature</span><h2>One-Click Publish</h2><p>Not just a sales page — a ready, shareable page for your product.</p>
+        <div class="lf-publish-bullets"><span>${icon('checkcircle',16)} AI-built sales page</span><span>${icon('checkcircle',16)} Publish with a live link</span><span>${icon('checkcircle',16)} Works with your existing checkout</span></div>
+        <small>Coming with secure paid-kit delivery. Illustration only.</small>
+      </div>
+      <div class="lf-publish-browser"><div class="lf-browser-address"><span class="lf-window-dots"><i></i><i></i><i></i></span><span>${icon('link',14)} salefix.app/p/your-product</span></div><div class="lf-publish-preview"><div><strong>Your Product</strong><i></i><i></i><i></i></div><span>${icon('spark',34)}</span></div></div>
+    </div>
+  </section>
+
+  <section class="container lf-bottom" aria-label="Pricing and common questions">
+    <article class="surface lf-price" id="pricing">
+      <div class="lf-price-amount"><span class="pill lightviolet">♛ Complete Sales Kit</span><strong>$49</strong><small>One-time payment</small></div>
+      <div class="lf-price-list"><span>${icon('checkcircle',16)} Full AI sales audit &amp; recommendations</span><span>${icon('checkcircle',16)} Improved, ready-to-use sales page</span><span>${icon('checkcircle',16)} 10 promotional posts</span><span>${icon('checkcircle',16)} 3 branded graphics concepts</span><span>${icon('checkcircle',16)} Buyer reply templates</span><span>${icon('checkcircle',16)} One-click publish (planned)</span></div>
+      <div class="lf-price-action"><a href="#/analyze" class="button button-primary">Get SaleFix — $49 ${icon('arrow',17)}</a><span>Free audit now · Checkout opening soon</span></div>
+    </article>
+    <article class="surface lf-faq" id="faq"><h2>Frequently Asked Questions</h2>
+      ${faqItem(0,'Which platforms does it work with?','SaleFix can analyze many publicly readable digital-product pages, including Gumroad, Payhip and independent websites. You can paste product details manually if crawling is blocked.')}
+      ${faqItem(1,'Do I need to sign up?','No login is required for the free audit. Paid publishing will use secure passwordless access after launch.')}
+      ${faqItem(2,'How will I get access after payment?','Once checkout is available, paid customers will receive a secure email link to their kit. Payments are disabled until delivery is ready.')}
+      ${faqItem(3,'Can I use it for multiple products?','The planned $49 purchase covers one product campaign kit. You can run a new free audit for another product.')}
+    </article>
+  </section>
+</main>${footer()}`;
 }
+
 function faqItem(i,q,a){return `<details class="surface faq-item"><summary>${safe(q)}${icon('chevron',20)}</summary><p>${safe(a)}</p></details>`}
 function stepsNav(active){return `<div class="progress-nav"><div class="${active>=1?'on':''}"><b>${active>1?icon('check',14):'1'}</b> Analyze product</div><i></i><div class="${active>=2?'on':''}"><b>${active>2?icon('check',14):'2'}</b> Analyzing</div><i></i><div class="${active>=3?'on':''}"><b>3</b> Get results</div></div>`}
 function analyze(){return `${header(true)}<main class="container workspace">${stepsNav(1)}<div class="form-layout"><div><div class="workspace-heading"><span class="eyebrow">STEP ONE</span><h1>Let's <span>analyze</span> your product.</h1><p>We'll review what your page communicates and identify what could be clearer.</p></div>
@@ -77,12 +159,13 @@ function checkout(){const r=state.results;return `${header(true)}<main class="co
 function legal(which){return `${header(true)}<main class="container legal-page surface"><a class="back-link" href="#/">← Back</a><h1>${which==='privacy'?'Privacy':'Terms of use'}</h1><p><strong>Status:</strong> Draft policy for MVP testing, not a substitute for a finalized legal policy.</p>${which==='privacy'?'<p>SaleFix requests the public product URL and optional content you provide to generate an audit. Your analysis may be held in your current browser session and processed on our server. If an AI key is configured, relevant product information may be sent to the selected AI provider for headline suggestions. Do not submit private or confidential material.</p><p>Payment, paid accounts, and analytics collection are not enabled in this build.</p>':'<p>SaleFix gives automated content recommendations. It does not guarantee sales, revenue or business results. Only submit product links and content you are authorized to analyze. Paid checkout is not active in this build.</p><p>When checkout is enabled, the current terms, refund details, and support contact must be published before accepting any payments.</p>'}<p>Contact: <a href="mailto:hello.skyorigin@gmail.com">hello.skyorigin@gmail.com</a></p></main>${footer()}`}
 function routeFromHash(){let hash=location.hash.replace(/^#\/?/,'');if(hash.startsWith('#'))hash=hash.slice(1);return hash.split('?')[0]}
 function render(){const route=routeFromHash();document.title=`${route==='analyze'?'Analyze product — ':route==='loading'?'Analyzing — ':route==='results'?'Your audit — ':''}SaleFix`;
+document.body.dataset.page=(route===''||route.startsWith('#'))?'landing':'workspace';
 const ui=route==='analyze'?analyze():route==='loading'?loading():route==='results'?showResult():route==='checkout'?checkout():route==='privacy'||route==='terms'?legal(route):landing();$('#app').innerHTML=ui;
 if(route==='loading'&&!state.analyzing){ if(state.results)nav('results');else nav('analyze') }
 if(route===''||route.startsWith('#')){const anchor=route.slice(1);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:'smooth'}),50)} }
-async function startAnalysis(){state.error='';state.results=null;sessionStorage.removeItem('salefix-analysis');state.analyzing=true;nav('loading');
+async function startAnalysis(){state.error='';state.results=null;try{sessionStorage.removeItem('salefix-analysis')}catch{}state.analyzing=true;nav('loading');
 try{const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName})});
-const data=await res.json();if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');state.results=data;sessionStorage.setItem('salefix-analysis',JSON.stringify(data));state.analyzing=false;nav('results');}
+const data=await res.json();if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}state.analyzing=false;nav('results');}
 catch(e){state.error=String(e.message||e);state.analyzing=false;nav('analyze');const form=$('#analyze-form');if(form){let err=document.createElement('div');err.className='error-message';err.textContent=state.error;form.prepend(err);}}}
 document.addEventListener('submit',e=>{if(e.target.id==='hero-form'){e.preventDefault();state.url=$('#hero-url').value.trim();nav('analyze')} if(e.target.id==='analyze-form'){e.preventDefault();const data=new FormData(e.target);for(let field of ['url','audience','benefit','manual','productName'])state[field]=String(data.get(field)||'').trim();startAnalysis()}});
 document.addEventListener('click',e=>{if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
