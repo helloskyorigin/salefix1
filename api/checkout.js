@@ -14,9 +14,10 @@ export default async function handler(req,res){
     if(!limit.allowed){res.setHeader('Retry-After',String(limit.retryAfter));return res.status(limit.status).json({error:limit.reason})}
     const body=typeof req.body==='string'?JSON.parse(req.body):req.body;
     if(!body||JSON.stringify(body).length>8000)return res.status(400).json({error:'Invalid product details.'});
-    const product=checkoutProduct(body.product);
+    let product;
+    try{product=checkoutProduct(body.product)}catch(e){return res.status(422).json({error:String(e.message||'Add your public product checkout link.')})}
     const orderId=crypto.randomUUID();
-    product.url=productCheckoutLink(product,orderId,process.env.SALEFIX_PUBLIC_ORIGIN);
+    product.url=productCheckoutLink(product);
     await saveJSON('salefix:order:'+orderId,{id:orderId,status:'pending',product,createdAt:Date.now()},90*86400);
     const session=await createDodoSession({orderId});
     return res.status(200).json({checkoutUrl:session.checkoutUrl});
