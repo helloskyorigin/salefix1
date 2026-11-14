@@ -34,7 +34,7 @@ test('a real text file submits and produces a results screen WITHOUT a website U
     return {ok:true,json:async()=>data};
   };
   await import('../app.js?file-only-integration');
-  assert.match(app.innerHTML,/Upload your product files/);
+  assert.match(app.innerHTML,/Upload product files/);
 
   const name='My Creator Playbook.txt';
   const content='Introduction. This digital product is a printable 30-day creator planner. '.repeat(20);
