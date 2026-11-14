@@ -6,7 +6,7 @@ A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix
 
 - Fully responsive landing page, analyze form, actual loading state, personalized free report, before/after headline and $49 checkout screen.
 - Real server-side retrieval of publicly readable HTML, up to three specific content observations and source-backed headline advice.
-- Optional Gemini API integration for headline suggestions; deterministic, evidence-based fallbacks if no key is supplied.
+- Optional Gemini API integration for headline suggestions and, only when explicitly enabled, content suggestions grounded in exact quotes from uploaded files. Deterministic, evidence-based fallbacks work without a key.
 - Public URL protections: HTTP(S) only, nonstandard ports blocked, private IPs/hostnames blocked, redirects rechecked, DNS pinned to resolved public IP, request timeout and response size limit.
 - Manual content fallback for websites that block crawling; source is disclosed in results.
 - One-time $49 pricing, no login required for free audit.
@@ -20,7 +20,7 @@ Requires Node.js 20+; zero npm packages.
 npm run dev
 ```
 
-Open http://localhost:3000 . To enable AI-assisted headline suggestions, copy `.env.example` to `.env.local` and set `GEMINI_API_KEY`; Node doesn't automatically read `.env.local` in this dependency-free local server, so pass it via your shell or deployment environment instead.
+Open http://localhost:3000 . To enable AI-assisted headlines, set `GEMINI_API_KEY` on the server. For optional file-content AI suggestions, also set `SALEFIX_ENABLE_FILE_AI=true` (disabled by default). File content is sent as capped text excerpts, never raw binaries. **Do not enable paid AI usage on the public endpoint before durable rate limits and billing monitoring are in place.** Google Gemini consumer subscriptions are separate from API billing. This dependency-free local server does not automatically read `.env.local`; export your variables in the shell. Run `npm test` to exercise the upload-only flow, real ZIP/Office fixture extraction and backend audit.
 
 ## Deployment
 
@@ -28,7 +28,7 @@ Open http://localhost:3000 . To enable AI-assisted headline suggestions, copy `.
 2. Import the repository into Vercel. Framework preset: **Other** (no build step), root `./`.
 3. Deploy. Vercel will treat `/api/analyze.js` as a Node serverless function and serve the static frontend.
 4. Optional: add `GEMINI_API_KEY` as a server-side environment variable. Do **not** prefix it with `NEXT_PUBLIC_`.
-5. Test a public product URL end-to-end and test the manual fallback.
+5. Test a public product URL, an upload-only PDF/ZIP, manual fallback and mobile file picker on a real browser before promoting the link. GitHub Actions runs `npm test` on every push.
 
 ## IMPORTANT: Before paid launch
 
@@ -72,6 +72,6 @@ For security, do not put actual payment tokens, private email addresses, or `SAL
 
 Visitors can upload up to three digital-product files (20 MB each, 45 MB combined) **without a website link**; a sales-page URL and manual description are optional. The browser extracts supported content and sends only excerpts, file inventory and metadata to `/api/analyze` (not the raw binary files). The backend reviews product completeness and usability using format-specific, conservative heuristics and displays the exact source of each observation. A separate sales-page check appears only when an accessible link is provided.
 
-Supported top-level input formats: PDF, ZIP, DOCX, XLSX, PPTX, EPUB, TXT, Markdown, CSV/TSV, JSON, PNG/JPEG/WEBP, and SVG. PDF text is extracted with lazy-loaded PDF.js (first 90 pages or capped excerpt); archive/Office/EPUB text is parsed using lazy-loaded JSZip. In ZIPs, the tool inventories all entries and samples small readable text files; it **does not execute files or visually inspect templates**, parse nested PDFs, detect broken formulas, verify factual claims, or perform OCR. For image assets, metadata is inspected, not design quality. Truncated/unsupported inspection is clearly disclosed. PDF.js requires internet connectivity to load; JSZip is bundled locally.
+Supported top-level input formats: PDF, ZIP, DOCX, XLSX, PPTX, EPUB, TXT, Markdown, CSV/TSV, JSON, PNG/JPEG/WEBP, and SVG. PDF text is extracted with lazy-loaded PDF.js (first 90 pages or capped excerpt); archive/Office/EPUB text is parsed using lazy-loaded JSZip. In ZIPs, the tool inventories up to 120 entries and samples small readable text files; it **does not execute files or visually inspect templates**, parse nested PDFs, detect broken formulas, verify factual claims, or perform OCR. For image assets, metadata is inspected, not design quality. Truncated/unsupported inspection is clearly disclosed. PDF.js requires internet connectivity to load; JSZip is bundled locally.
 
 Archive protections: max 220 entries, 75 MB estimated uncompressed; no executable execution; no server-side file storage. This is a useful preliminary product audit, not a guarantee of sales, factual correctness, or complete file validation. Use appropriate rate limiting on `/api/analyze` before high traffic. Checkout remains disabled.
