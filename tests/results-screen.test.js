@@ -19,7 +19,7 @@ test('Results screen shows grounded info, guarded links and a truthful payment s
   assert.match(app.innerHTML,/Sales audit — key findings/);
   assert.match(app.innerHTML,/Content recommendations, not a sales score/);
   assert.match(app.innerHTML,/From your provided product copy/);
-  assert.match(app.innerHTML,/Paid checkout is not active yet/);
+  assert.match(app.innerHTML,/Payment availability is checked at checkout/);
   assert.match(app.innerHTML,/href="https:\/\/example.com\/creator-kit"/);
   assert.match(app.innerHTML,/Creator Toolkit &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.doesNotMatch(app.innerHTML,/<script>alert\(1\)<\/script>/);
