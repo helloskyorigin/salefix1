@@ -1,6 +1,7 @@
 import {legalContent, SUPPORT_EMAIL} from './legal-content.js';
 import {kitShell, hydrateKit} from './kit-dashboard.js';
 import {extractProductFiles} from './product-extractor.js';
+import {renderAuditWorkspace,auditFindings,auditPlainText,markReviewed} from './result-workspace.js';
 const $=s=>document.querySelector(s);
 const safe=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
 const paths={
@@ -203,37 +204,41 @@ function loading(){const domain=(()=>{try{return state.url?new URL(state.url).ho
 <aside class="scan-side" aria-label="What SaleFix is reviewing"><div class="surface scan-product-card"><span class="scan-small-page" aria-hidden="true"><i></i><b></b><em></em></span><span class="scan-product-copy"><strong>Your Product</strong><small>Reviewing <b>${safe(domain)}</b> and any details you provided</small></span></div>
 <div class="surface scan-criteria-card"><div class="scan-criteria-item"><span class="scan-criteria-icon lavender">${icon('scan',25)}</span><span><strong>Offer Analysis</strong><small>Is your product offer clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon sky">${icon('person',25)}</span><span><strong>Product clarity</strong><small>Are the contents easy to understand?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon indigo">${icon('chart',25)}</span><span><strong>Conversion Check</strong><small>Is the buying action clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon violet">${icon('spark',25)}</span><span><strong>Improvement Ideas</strong><small>Practical fixes based on your content.</small></span></div></div></aside></div></main>${footer()}`}
 function showResult(){
-  const r=state.results;
-  if(!r || !r.product || !Array.isArray(r.issues))return `${header(true)}<main class="container empty-state surface" role="status"><h1>No audit available</h1><p>Upload your product file or paste a sales-page link to begin.</p><a class="button button-primary" href="#/analyze">Analyze a product ${icon('arrow',18)}</a></main>${footer()}`;
-  const product=r.product;
-  const productUrl=(()=>{try{const u=new URL(product.url||'');return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password?u:null}catch{return null}})();
-  const domain=productUrl?productUrl.hostname.replace(/^www\./,''):(r.fileAudit?'Product file audit':'Link unavailable');
-  const sourceProvided=product.source==='User-provided product copy';
-  const fromFiles=!!r.fileAudit;
-  const sourceLabel=fromFiles?'From your uploaded product files':sourceProvided?'From your provided product copy':'From readable public page content';
-  const price=product.price?`<span>${icon('bolt',16)} <b>Detected:</b> ${safe(product.price)}</span>`:'';
-  const imageUrl=(()=>{try{const u=new URL(product.imageUrl||'');if(u.protocol!=='https:'||u.username||u.password||u.href.length>1800||!u.hostname.includes('.'))return '';return u.href}catch{return ''}})();
-  const preview=imageUrl?`<img class="rf-real-cover" src="${safe(imageUrl)}" alt="Product preview supplied by the original page" loading="lazy" referrerpolicy="no-referrer"/>`:`<div class="rf-generic-cover" aria-label="SaleFix product placeholder"><span>${icon('layers',36)}</span><small>Product overview</small></div>`;
-  const issues=r.issues.filter(it=>it && typeof it==='object' && it.label && it.fix).slice(0,3);
-  const issueLabel=issues.length===1?'1 finding':`${issues.length} findings`;
-  const fileReport=r.fileAudit;
-  const fileReportMarkup=fileReport?`<section class="surface pf-report" aria-labelledby="pf-report-heading"><div class="pf-report-head"><span class="pf-report-icon">${icon('layers',24)}</span><div><h2 id="pf-report-heading">Inside your product</h2><p>Source-backed file inspection · ${safe(fileReport.fileCount)} file(s)</p><small>${safe(fileReport.reviewMethod||'Automated file checks')}</small></div></div><div class="pf-report-files">${(fileReport.files||[]).map(f=>`<div class="pf-report-file"><div><strong>${safe(f.name)}</strong><small>${safe(f.ext.toUpperCase())} · ${formatFileSize(f.size)}${f.pages?' · '+f.pages+' pages':''}${f.slides?' · '+f.slides+' slides':''}${f.sheets?' · '+f.sheets+' sheets':''}${f.entries?.length?' · '+f.entries.length+' listed entries':''}</small></div><span>${f.inspected?'Inspected':'Metadata only'}</span></div>`).join('')}</div>${fileReport.notices?.length?`<details class="pf-limitations"><summary>What we could not verify (${fileReport.notices.length})</summary><ul>${fileReport.notices.map(n=>`<li>${safe(n)}</li>`).join('')}</ul></details>`:''}<p class="pf-report-caption">Recommendations below apply to your actual product files, not just a sales website.</p></section>`:'';
-  const salesIssuesMarkup=Array.isArray(r.salesIssues)&&r.salesIssues.length?`<section class="surface pf-sales-section"><h2>Optional sales-page review</h2><p>Separate suggestions based on the readable webpage, not the uploaded files.</p><div class="pf-sales-list">${r.salesIssues.slice(0,3).map(it=>`<div><strong>${safe(it.label)}</strong><small>${safe(it.evidence)}</small><span>${safe(it.fix)}</span></div>`).join('')}</div></section>`:'';
-  const issuesMarkup=issues.length?issues.map((it,i)=>`<article class="rf-row"><div class="rf-problem"><span class="rf-problem-icon">${icon('alert',18)}</span><div><b>${i+1}. ${safe(it.label)}</b><small>${safe(it.evidence||'Review this section of your product offer.')}</small></div></div><div class="rf-arrow" aria-hidden="true">${icon('arrow',18)}</div><div class="rf-solution"><span class="rf-solution-icon">${icon('checkcircle',19)}</span><div><b>${safe(it.fix)}</b></div></div></article>`).join(''):`<p class="rf-none">No specific issues were identified from the text we could read. You can still review the headline suggestion below.</p>`;
-  const beforeText=safe(product.h1||product.title||'No readable headline found');
-  const improvedText=String(r.improvedHeadline||'').trim();
-  const afterText=safe(improvedText||'No revised headline is available for this product.');
-  const sourceNote=String(r.note||'').trim();
-  return `${header(true)}<main class="container workspace result-reference-page results-v2">
-    <div class="rf-steps" aria-label="Analysis steps"><span class="rf-step done">${icon('check',14)} <span>Analyze product</span></span><i></i><span class="rf-step done">${icon('check',14)} <span>Analyze content</span></span><i></i><span class="rf-step active" aria-current="step"><b>3</b><span>Get results</span></span></div>
-    <section class="rf-header"><div><h1>Your product audit is <span>ready.</span></h1><p>See what SaleFix could inspect inside your product and the practical improvements you can make.</p></div><span class="pill lightgreen">${icon('spark',16)} Free audit</span></section>
-    <div class="rf-grid"><div class="rf-left">${fileReportMarkup}
-      <section class="surface rf-product-card" aria-labelledby="rf-product-title"><div class="rf-cover">${preview}</div><div class="rf-product-info"><div class="rf-product-top"><h2 id="rf-product-title">${safe(product.title||'Your product')}</h2>${productUrl?`<a href="${safe(productUrl.href)}" rel="noopener noreferrer" target="_blank" class="mini-external" aria-label="Open original product page">${icon('external',20)}</a>`:''}</div><p>${safe(product.description||'Description was not available in the readable page content.')}</p><div class="rf-meta">${price}<span>${icon('globe',16)} ${safe(domain)}</span></div><div class="rf-source">${icon('shield',14)} ${safe(sourceLabel)}</div></div></section>
-      ${salesIssuesMarkup}<section class="surface rf-findings-card" aria-labelledby="rf-findings-title"><div class="rf-card-head"><span class="circle-icon">${icon('spark',22)}</span><div><h2 id="rf-findings-title">${fromFiles?'Product audit — key findings':'Sales audit — key findings'}</h2><p>${issueLabel} based on ${fromFiles?'inspected product-file content':'the product text we could access'}.</p></div></div><div class="rf-findings-list">${issuesMarkup}</div><div class="rf-summary"><span class="rf-summary-count">${issues.length}</span><div><strong>${issues.length===1?'Opportunity to review':'Opportunities to review'}</strong><p>Content recommendations, not a sales score or a prediction of purchases.</p></div></div></section>
-    </div><div class="rf-right">
-      <section class="surface rf-beforeafter-card" aria-labelledby="rf-compare-title"><div class="rf-card-head"><span class="circle-icon">${icon('refresh',22)}</span><div><h2 id="rf-compare-title">Before &amp; after</h2><p>A suggested headline using your actual product information.</p></div></div><div class="rf-compare"><div class="rf-compare-col"><span class="tag tag-red">Original</span><div class="rf-browser before"><div class="rf-browser-top"><i></i><i></i><i></i></div><div class="rf-browser-body"><strong>${beforeText}</strong><em></em><em class="short"></em></div></div></div><span class="rf-compare-arrow" aria-hidden="true">${icon('arrow',20)}</span><div class="rf-compare-col"><span class="tag tag-green">Suggested</span><div class="rf-browser after"><div class="rf-browser-top"><i></i><i></i><i></i></div><div class="rf-browser-body"><strong>${afterText}</strong><em></em><em class="short"></em></div></div></div></div>${improvedText?`<div class="rf-copy-row"><span>${safe(r.headlineSource||'Suggested wording, based on available details')}</span><button type="button" class="rf-copy-btn" data-copy-headline="1" aria-label="Copy suggested headline">${icon('text',16)} Copy headline</button></div><p class="rf-copy-feedback" role="status" aria-live="polite"></p>`:''}</section>
-      <section class="surface rf-kit-card" aria-labelledby="rf-kit-title"><div class="rf-card-head"><span class="circle-icon">${icon('lock',22)}</span><div><h2 id="rf-kit-title">Complete SaleFix Kit</h2><p>More tools to put these improvements into practice.</p></div></div><div class="rf-kit-list"><div>${icon('checkcircle',18)} Deeper sales copy review</div><div>${icon('checkcircle',18)} Ready-to-edit sales page</div><div>${icon('checkcircle',18)} 10 promotional posts</div><div>${icon('checkcircle',18)} 3 promotional graphics</div><div>${icon('checkcircle',18)} Buyer reply templates</div><div>${icon('checkcircle',18)} Hosted publishing with a verified purchase</div></div><div class="rf-kit-actions"><p><strong>$29 one-time</strong> · Payment availability is checked at checkout.</p><button class="button button-primary jumbo full-width" id="unlock-button" type="button">View full kit details ${icon('arrow',18)}</button><small>No payment will be taken on this version.</small></div></section>
-    </div></div>${sourceNote?`<div class="rf-source-note">${icon('alert',17)} ${safe(sourceNote)}</div>`:''}<div class="rf-disclaimer">${icon('shield',16)} ${safe(r.disclaimer||'This review covers readable text and may miss dynamic content. It does not predict sales.')}</div></main>${footer()}`;
+  return renderAuditWorkspace(state.results,icon,header,footer);
+}
+function refreshAuditChecklist(){
+  const checks=document.querySelectorAll?.('[data-rv-reviewed]')||[];
+  let completed=0;
+  for(const input of checks){
+    if(input.checked)completed++;
+    input.closest?.('.rv-fix')?.classList.toggle('is-reviewed',Boolean(input.checked));
+  }
+  const count=document.querySelector('[data-rv-reviewed-count]');
+  if(count)count.textContent=completed+' of '+checks.length;
+}
+async function copyAuditText(value){
+  if(navigator.clipboard&&window.isSecureContext){
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+  const field=document.createElement('textarea');
+  field.value=value;field.style.position='fixed';field.style.left='-9999px';
+  document.body.appendChild(field);field.select();
+  const ok=document.execCommand('copy');field.remove();
+  if(!ok)throw Error('Clipboard is unavailable');
+}
+function exportAuditReport(){
+  if(!state.results?.product)return;
+  const content=auditPlainText(state.results);
+  const slug=String(state.results.product.title||'product').toLowerCase().replace(/[^a-z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,46)||'product';
+  const blob=new Blob([content],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='SaleFix-'+slug+'-audit.txt';
+  a.style.display='none';document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  for(const button of document.querySelectorAll('[data-rv-download]')){
+    button.setAttribute('aria-label','Report downloaded');
+  }
 }
 function checkout(){const r=state.results;return `${header(true)}<main class="container checkout-page"><div class="checkout-copy"><span class="eyebrow">COMPLETE SALEFIX KIT</span><h1>One-time unlock.<br/><span>Everything in one place.</span></h1><p>Get a personalized, editable Sales Kit for the product you just reviewed. Payment and delivery are only enabled after secure merchant setup.</p><div class="checkout-items"><div>${icon('checkcircle',20)} Complete offer improvement kit</div><div>${icon('checkcircle',20)} Editable sales-page copy and downloadable HTML</div><div>${icon('checkcircle',20)} 10 posts, 3 graphics, buyer replies and launch plan</div><div>${icon('checkcircle',20)} Secure email delivery and hosted publishing when enabled</div></div></div><div class="surface checkout-box"><div class="checkout-title">Your order <span>SaleFix</span></div><div class="order-row">SaleFix complete kit <b>$29.00</b></div><div class="order-row total">One-time price <b>$29.00</b></div><label for="product-purchase-link" class="simple-source-label" style="margin-top:18px">Your product purchase link</label><input id="product-purchase-link" type="url" autocomplete="url" inputmode="url" maxlength="1800" value="${safe(state.results?.product?.url||'')}" placeholder="https://yourstore.com/your-product" style="width:100%;min-height:52px;border:1px solid #d6dfed;border-radius:13px;padding:12px 14px;font-size:16px"/><p style="font-size:12px;color:#697691;margin:8px 0 14px">Required for the paid Sales Kit and promotional links. Free audit does not require it.</p><div class="checkout-alert" role="status">Checking secure checkout availability…</div><button class="button button-primary full-width jumbo" id="checkout-button" type="button" disabled>${icon('lock',18)} Secure checkout</button><p>${icon('shield',16)} No signup. A receipt and secure access link are emailed after payment verification. Taxes, where applicable, are shown by the payment provider.</p><a href="#/recover" class="back-link">Already purchased? Recover your kit ↗</a><a class="back-link" href="#/results">← Back to free report</a></div></main>${footer()}`}
 function paymentReturn(){return `${header(true)}<main class="container checkout-page"><div class="surface checkout-box" style="max-width:660px;margin:0 auto"><h1>Thanks for checking out SaleFix</h1><p>If your payment succeeded, your kit access link will be emailed after server-side verification. This page does not confirm payment.</p><p>Check your inbox and spam folder for the secure SaleFix link. If you haven't received it, you can request another below.</p><a class="button button-primary full-width" href="#/recover">Recover my purchase link</a><a class="back-link" href="#/">Back to SaleFix</a></div></main>${footer()}`}
@@ -336,11 +341,41 @@ document.addEventListener('input',e=>{
   }
 });
 document.addEventListener('change',e=>{
+  if(e.target.matches?.('[data-rv-reviewed]')){
+    const index=Number(e.target.dataset.rvReviewed);
+    if(markReviewed(state.results,index,Boolean(e.target.checked)))refreshAuditChecklist();
+    return;
+  }
   if(e.target.id==='product-files'&&!selectProductFiles(e.target.files))e.target.value='';
 });
 document.addEventListener('dragover',e=>{if(e.target.closest?.('#product-drop-zone'))e.preventDefault()});
 document.addEventListener('drop',e=>{if(!e.target.closest?.('#product-drop-zone'))return;e.preventDefault();selectProductFiles(e.dataTransfer?.files);});
-document.addEventListener('click',async e=>{if(e.target.closest('#clear-product-files')){selectedProductFiles=[];const input=$('#product-files');if(input)input.value='';updateSelectedFiles();return;}const copy=e.target.closest('[data-copy-headline]');if(copy){const text=String(state.results?.improvedHeadline||'').trim();const feedback=$('.rf-copy-feedback');if(!text){if(feedback)feedback.textContent='No suggestion available to copy.';return;}try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{const field=document.createElement('textarea');field.value=text;field.style.position='fixed';field.style.left='-9999px';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw new Error('Clipboard not available');}if(feedback)feedback.textContent='Headline copied!';}catch{if(feedback)feedback.textContent='Could not copy automatically. Please select the headline text above.';}return;}if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){
+document.addEventListener('click',async e=>{
+  const jump=e.target.closest('[data-rv-jump]');
+  if(jump){
+    document.getElementById(jump.dataset.rvJump)?.scrollIntoView?.({behavior:'smooth',block:'start'});
+    return;
+  }
+  const download=e.target.closest('[data-rv-download]');
+  if(download){
+    try{exportAuditReport()}catch{download.setAttribute('aria-label','Download unavailable; please retry')}
+    return;
+  }
+  const fixButton=e.target.closest('[data-rv-copy-fix]');
+  if(fixButton){
+    const index=Number(fixButton.dataset.rvCopyFix);
+    const issue=auditFindings(state.results)[index];
+    if(!issue)return;
+    const feedback=document.getElementById('rv-fix-feedback-'+index);
+    try{
+      await copyAuditText(String(issue.fix));
+      if(feedback)feedback.textContent='Copied!';
+    }catch{
+      if(feedback)feedback.textContent='Could not copy automatically. Select the recommendation to copy it.';
+    }
+    return;
+  }
+  if(e.target.closest('#clear-product-files')){selectedProductFiles=[];const input=$('#product-files');if(input)input.value='';updateSelectedFiles();return;}const copy=e.target.closest('[data-copy-headline]');if(copy){const text=String(state.results?.improvedHeadline||'').trim();const feedback=$('.rf-copy-feedback');if(!text){if(feedback)feedback.textContent='No suggestion available to copy.';return;}try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{const field=document.createElement('textarea');field.value=text;field.style.position='fixed';field.style.left='-9999px';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw new Error('Clipboard not available');}if(feedback)feedback.textContent='Headline copied!';}catch{if(feedback)feedback.textContent='Could not copy automatically. Please select the headline text above.';}return;}if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){
   const button=$('#checkout-button'),notice=$('.checkout-alert');if(!state.checkoutReady||!state.results?.product)return;
   button.disabled=true;if(notice)notice.textContent='Opening secure checkout…';
   try{const p=state.results.product;const purchaseLink=String($('#product-purchase-link')?.value||'').trim();if(!/^https?:\/\/[^\s]+/i.test(purchaseLink))throw Error('Please add a real public product purchase link before checkout.');const resp=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:{title:p.title,description:p.description,url:purchaseLink,price:p.price,headline:state.results.improvedHeadline}})});const data=await resp.json();if(!resp.ok)throw Error(data.error||'Checkout unavailable');const link=new URL(data.checkoutUrl);if(link.protocol!=='https:'||!link.hostname.endsWith('.dodopayments.com'))throw Error('Invalid checkout link');window.location.assign(link.href);}catch(err){if(notice)notice.textContent=String(err.message||'Checkout unavailable. No payment was taken.');button.disabled=false;}
