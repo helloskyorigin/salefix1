@@ -13,6 +13,7 @@ async function visitAndAudit(viewport){
     assert.equal(await page.title(),'SaleFix');
     await page.locator('.lf-hero-start').click();
     await page.waitForURL('**/#/analyze');
+    await page.locator('#analyze-form').waitFor({state:'visible'});
     assert.equal(await page.locator('#analyze-form input').count(),2);
     assert.equal(await page.locator('#analyze-form textarea').count(),1);
     assert.equal(await page.locator('#product-files').count(),1);
