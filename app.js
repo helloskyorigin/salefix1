@@ -28,7 +28,7 @@ const paths={
 };
 const icon=(name,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.spark}</svg>`;
 const logo=()=>`<a href="#/" class="logo" aria-label="SaleFix home"><img src="/assets/salefix-logo.png" alt=""/><span>SaleFix</span></a>`;
-const state={url:'',audience:'',benefit:'',manual:'',productName:'',results:null,error:'',showManualDetails:false,activeFaq:-1,analyzing:false,scanStarted:0};
+const state={url:'',results:null,error:'',activeFaq:-1,analyzing:false,scanStarted:0};
 try{state.results=JSON.parse(sessionStorage.getItem('salefix-analysis')||'null');}catch{}
 let activeAnalysisController=null;
 let selectedProductFiles=[];
@@ -44,7 +44,7 @@ function selectProductFiles(files){
   if(error){selectedProductFiles=[];state.error=error;nav('analyze');return false;}
   selectedProductFiles=list;state.error='';updateSelectedFiles();return true;
 }
-function updateSelectedFiles(){const target=$('#selected-product-files');if(!target)return;target.innerHTML=selectedProductFiles.length?selectedProductFiles.map(f=>`<span class="pf-file-pill">${icon('checkcircle',14)} ${safe(f.name)} <small>${formatFileSize(f.size)}</small></span>`).join(''):'<span>No file selected — product link or description also works.</span>';const clear=$('#clear-product-files');if(clear)clear.hidden=!selectedProductFiles.length;}
+function updateSelectedFiles(){const target=$('#selected-product-files');if(!target)return;target.innerHTML=selectedProductFiles.length?selectedProductFiles.map(f=>`<span class="pf-file-pill">${icon('checkcircle',14)} ${safe(f.name)} <small>${formatFileSize(f.size)}</small></span>`).join(''):'';const clear=$('#clear-product-files');if(clear)clear.hidden=!selectedProductFiles.length;}
 function nav(route){if(route!=='loading'&&state.analyzing&&routeFromHash()==='loading'){activeAnalysisController?.abort();state.analyzing=false;}location.hash=`#/${route||''}`;window.scrollTo({top:0,behavior:'instant'});render()}
 function header(compact=false){return `<header class="site-header"><div class="container header-inner">${logo()}<nav class="nav-links"><a href="#/#how">How it works</a><a href="#/#features">Features</a><a href="#/#pricing">Pricing</a><a href="#/#faq">FAQ</a></nav><a class="button button-primary button-small" href="#/analyze">${compact?'New analysis':'Analyze my product'} ${icon('arrow',15)}</a></div></header>`}
 function footer(){return `<footer class="footer container"><div>${logo()}<p>Clearer offers. Better first impressions.</p><a class="footer-email" href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></div><div class="footer-right"><span>© ${new Date().getFullYear()} SaleFix</span><a href="#/contact">Contact</a><a href="#/privacy">Privacy</a><a href="#/terms">Terms</a><a href="#/refunds">Refunds</a></div></footer>`}
@@ -59,13 +59,9 @@ return `${header()}
       <span class="pill softblue lf-kicker">${icon('spark',15)} AI-Powered Sales Optimization</span>
       <h1 id="landing-title">Turn your product into a <span>better-selling</span> offer.</h1>
       <p>Check what's inside your digital product — PDFs, ZIP toolkits, templates and more. Get actionable improvements for the product itself and how you sell it.</p>
-      <form class="lf-url-bar" id="hero-form">
-        <label for="hero-url" class="sr-only">Product website or domain (optional)</label>
-        <span class="lf-url-icon">${icon('link',17)}</span>
-        <input id="hero-url" type="text" maxlength="1200" placeholder="Product link (optional) — or upload files below" autocomplete="url" inputmode="url" autocapitalize="off" spellcheck="false" value="${safe(state.url)}" />
-        <button type="submit" class="button button-primary">Analyze for Free ${icon('arrow',18)}</button>
-      </form>
-      <a class="lf-manual-link" href="#/analyze" id="manual-start">${icon('upload',16)} Upload a PDF, ZIP, template or product files instead →</a><div class="lf-trust"><span>${icon('checkcircle',15)} No signup</span><span>${icon('checkcircle',15)} Free analysis</span><span>${icon('checkcircle',15)} No card required</span></div>
+      <a class="button button-primary lf-hero-start" href="#/analyze">Analyze My Product ${icon('arrow',18)}</a>
+      <p class="lf-hero-hint">Upload your product or paste its link. No extra questions.</p>
+      <div class="lf-trust"><span>${icon('checkcircle',15)} No signup</span><span>${icon('checkcircle',15)} Free analysis</span><span>${icon('checkcircle',15)} No card required</span></div>
     </div>
     <div class="lf-hero-art" aria-label="Illustration of a SaleFix sales kit and product sales page">
       <div class="lf-art-halo"></div>
@@ -170,27 +166,28 @@ return `${header()}
 
 function faqItem(i,q,a){return `<details class="surface faq-item"><summary>${safe(q)}${icon('chevron',20)}</summary><p>${safe(a)}</p></details>`}
 function stepsNav(active){const working=active===2;return `<div class="progress-nav" aria-label="Analysis progress"><div class="on"><b>${active>1?icon('check',14):'1'}</b> Analyze Product</div><i></i><div class="${active>1?'on':''}"><b>2</b> ${working?'Analyzing…':'Get Results'}</div></div>`}
-function analyze(){return `${header()}<main class="container workspace analyze-page">${stepsNav(1)}<div class="form-layout"><div><div class="workspace-heading"><h1>Let’s <span>analyze</span> your product.</h1><p>We’ll inspect your actual files for useful improvements, then help sharpen your sales message.</p></div>
-<form id="analyze-form" class="surface product-form">${state.error?`<div class="error-message analyze-error" role="alert" tabindex="-1">${icon('alert',19)} <span>${safe(state.error)}</span></div>`:''}<section class="pf-upload-area" aria-label="Upload digital product files">
-  <div class="pf-eyebrow">${icon('layers',18)} Your digital product <span class="pf-optional">Choose files or add a link below</span></div>
+function analyze(){return `${header()}<main class="container workspace analyze-page simple-analyze"><div class="form-layout"><div><div class="workspace-heading"><span class="simple-form-kicker">${icon('spark',15)} FREE PRODUCT AUDIT</span><h1>One product. <span>Two easy ways.</span></h1><p>Upload your digital product <strong>or</strong> paste its selling-page link. No signup. No long form.</p></div>
+<form id="analyze-form" class="surface product-form simple-product-form" novalidate>
+${state.error?`<div class="error-message analyze-error" role="alert" tabindex="-1">${icon('alert',19)} <span>${safe(state.error)}</span></div>`:''}
+<div class="simple-source-label"><span>${icon('upload',18)} Upload product files</span><small>Optional</small></div>
+<section class="pf-upload-area" aria-label="Upload digital product files">
   <label class="pf-drop-zone" for="product-files" id="product-drop-zone">
-    <span class="pf-upload-icon">${icon('upload',26)}</span>
-    <strong>Upload your product files</strong>
-    <span>PDF, ZIP, DOCX, XLSX, PPTX, EPUB, CSV, text or images</span>
-    <span class="pf-file-choose">Choose files</span>
-    <small>Up to 3 files · 20 MB per file · 45 MB total</small>
-    <input type="file" id="product-files" multiple accept=".pdf,.zip,.docx,.xlsx,.pptx,.epub,.txt,.md,.csv,.tsv,.json,.png,.jpg,.jpeg,.webp,.svg" aria-describedby="product-file-help"/>
+    <span class="pf-upload-icon">${icon('upload',24)}</span>
+    <strong>Drop files here or browse</strong>
+    <span>PDF · ZIP · DOCX · XLSX · PPTX · EPUB · Text · Images</span>
+    <small>Up to 3 files · 20 MB each</small>
+    <input type="file" id="product-files" multiple accept=".pdf,.zip,.docx,.xlsx,.pptx,.epub,.txt,.md,.csv,.tsv,.json,.png,.jpg,.jpeg,.webp,.svg" aria-describedby="product-file-help" />
   </label>
-  <div class="pf-selected-row"><div id="selected-product-files" role="status" aria-live="polite"></div><button id="clear-product-files" type="button" hidden>Clear</button></div>
-  <p id="product-file-help" class="pf-privacy-note">${icon('shield',14)} Files are read in your browser. Only extracted text and file details are sent for the audit — not the original files.</p>
-  <div class="pf-or"><span></span> OR ADD A LINK <span></span></div>
+  <div class="pf-selected-row"><div id="selected-product-files" role="status" aria-live="polite"></div><button id="clear-product-files" type="button" hidden>Remove files</button></div>
 </section>
-<div class="field-row"><span class="field-icon">${icon('link',25)}</span><label>Product link or domain <small>(Optional)</small><input type="text" name="url" placeholder="google.com or https://yourproduct.com" maxlength="1200" autocomplete="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="product-url-help" value="${safe(state.url)}"/><small id="product-url-help" class="analyze-input-hint">Optional selling page: Gumroad, Payhip or your own domain. Uploading files works without a link.</small></label></div>
-<div class="field-row"><span class="field-icon purple">${icon('person',25)}</span><label>Who is your product for? <small>(Optional)</small><input name="audience" maxlength="130" autocomplete="off" placeholder="e.g. Freelancers, creators, students" value="${safe(state.audience)}"/></label></div>
-<div class="field-row"><span class="field-icon violet">${icon('bolt',25)}</span><label>What does your product help people do? <small>(Optional)</small><textarea name="benefit" maxlength="200" rows="2" placeholder="Describe the main benefit in 1–2 lines...">${safe(state.benefit)}</textarea></label></div>
-<details id="manual-details" class="manual-details" ${state.showManualDetails||!state.url?'open':''}><summary>Optional product details / describe a product without files ${icon('chevron',16)}</summary><label>Product title <small>Optional</small><input name="productName" maxlength="100" placeholder="Your product name" value="${safe(state.productName)}"/></label><label>Actual product description / sales copy<textarea name="manual" maxlength="6000" rows="5" placeholder="Paste the real text from your product page here">${safe(state.manual)}</textarea></label><p>If no files or link are provided, add at least 60 characters of real product copy. File audits use what we can actually inspect.</p></details>
-<button type="submit" class="button button-primary full-width jumbo">${icon('spark',19)} Analyze My Product ${icon('arrow',20)}</button><div class="form-trust"><span>${icon('checkcircle',16)} Free analysis</span><span>${icon('checkcircle',16)} No signup</span><span>${icon('checkcircle',16)} No card required</span></div></form></div>
-<aside class="form-aside" aria-label="Example of SaleFix audit capabilities"><div class="right-illustration"><div class="scan-card surface"><div class="scan-logo"><span class="audit-mark">${icon('bolt',19)}</span> SaleFix Product Audit</div><div class="scan-check">${icon('scan',20)} Review product messaging</div><div class="scan-check">${icon('checkcircle',20)} Suggest a clearer headline</div><div class="scan-check">${icon('checkcircle',20)} Improve product copy</div><div class="scan-check">${icon('checkcircle',20)} Give specific next steps</div></div><div class="scan-preview surface">${browserWindow('<div class="preview-mock-body"><div class="preview-mock-thumb">'+icon('layers',29)+'</div><div class="preview-mock-lines"><i></i><i></i><i></i></div></div><div class="preview-chart"><i></i><i></i><i></i></div>')}</div></div><h3>What you’ll get <span class="tag tag-green">Free</span></h3><div class="aside-benefit">${icon('scan',25)}<span><strong>Product Audit</strong><small>Find what could be clearer in your offer.</small></span></div><div class="aside-benefit">${icon('chart',25)}<span><strong>Improvement Suggestions</strong><small>Get a stronger headline, offer &amp; CTA.</small></span></div><div class="aside-benefit">${icon('eye',25)}<span><strong>Before &amp; After Preview</strong><small>See how your product message can improve.</small></span></div></aside></div></main>${footer()}`}
+<div class="pf-or"><span></span> OR <span></span></div>
+<div class="simple-source-label"><span>${icon('link',18)} Product page link</span><small>Optional</small></div>
+<label class="simple-url-wrap"><span class="sr-only">Product link or domain</span><input type="text" name="url" placeholder="https://yourstore.com/product" maxlength="1200" autocomplete="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="product-url-help" value="${safe(state.url)}"/></label>
+<p class="simple-input-note" id="product-url-help">Gumroad, Payhip or your own sales page.</p>
+<p class="simple-selection-tip">Choose at least one. You can add both for a product + sales-page review.</p>
+<button type="submit" class="button button-primary full-width jumbo">${icon('spark',19)} Analyze for Free ${icon('arrow',20)}</button>
+<p id="product-file-help" class="simple-privacy">${icon('shield',15)} Files stay in your browser; only extracted text and file details are sent for analysis.</p>
+</form></div></div></main>${footer()}`}
 function loadingProgress(){return `<div class="scan-progress" aria-label="Analysis progress"><span class="scan-progress-step completed"><span class="scan-progress-dot">${icon('check',15)}</span><span>Analyze Product</span></span><span class="scan-progress-line active"></span><span class="scan-progress-step current" aria-current="step"><span class="scan-progress-dot">2</span><span>Analyzing</span></span><span class="scan-progress-line"></span><span class="scan-progress-step pending"><span class="scan-progress-dot">3</span><span>Get Results</span></span></div>`}
 function loading(){const domain=(()=>{try{return state.url?new URL(state.url).hostname.replace(/^www\./,''):'your product details'}catch{return 'your product details'}})();return `${header(true)}<main class="container workspace scan-workspace">${loadingProgress()}
 <div class="scan-grid"><section class="surface scan-panel" aria-label="Analyzing your product">
@@ -204,7 +201,7 @@ function loading(){const domain=(()=>{try{return state.url?new URL(state.url).ho
 <div class="surface scan-criteria-card"><div class="scan-criteria-item"><span class="scan-criteria-icon lavender">${icon('scan',25)}</span><span><strong>Offer Analysis</strong><small>Is your product offer clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon sky">${icon('person',25)}</span><span><strong>Audience Fit</strong><small>Does the message fit your audience?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon indigo">${icon('chart',25)}</span><span><strong>Conversion Check</strong><small>Is the buying action clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon violet">${icon('spark',25)}</span><span><strong>Improvement Ideas</strong><small>Practical fixes based on your content.</small></span></div></div></aside></div></main>${footer()}`}
 function showResult(){
   const r=state.results;
-  if(!r || !r.product || !Array.isArray(r.issues))return `${header(true)}<main class="container empty-state surface" role="status"><h1>No audit available</h1><p>Start with a product website or manually enter your product details.</p><a class="button button-primary" href="#/analyze">Analyze a product ${icon('arrow',18)}</a></main>${footer()}`;
+  if(!r || !r.product || !Array.isArray(r.issues))return `${header(true)}<main class="container empty-state surface" role="status"><h1>No audit available</h1><p>Upload your product file or paste a sales-page link to begin.</p><a class="button button-primary" href="#/analyze">Analyze a product ${icon('arrow',18)}</a></main>${footer()}`;
   const product=r.product;
   const productUrl=(()=>{try{const u=new URL(product.url||'');return ['http:','https:'].includes(u.protocol)&&!u.username&&!u.password?u:null}catch{return null}})();
   const domain=productUrl?productUrl.hostname.replace(/^www\./,''):(r.fileAudit?'Product file audit':'Link unavailable');
@@ -246,14 +243,14 @@ if(route==='kit')hydrateKit();
 if(route==='analyze')updateSelectedFiles();
 if(route==='loading'&&!state.analyzing){ if(state.results)nav('results');else nav('analyze') }
 if(route===''||route.startsWith('#')){const anchor=route.slice(1);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:'smooth'}),50)} }
-function showAnalyzeError(message,openManual=false){state.error=String(message||'Unable to analyze this product.');state.analyzing=false;if(openManual)state.showManualDetails=true;nav('analyze');}
+function showAnalyzeError(message){state.error=String(message||'Unable to analyze this product.');state.analyzing=false;nav('analyze');}
 async function startAnalysis(){
   if(state.analyzing)return;
   state.error='';state.results=null;
   // A product upload is a complete input on its own; a sales-page URL is optional.
   const value=state.url.trim();
-  if(!value&&!selectedProductFiles.length&&state.manual.trim().length<60){
-    showAnalyzeError('Without a link, paste at least 60 characters of your real product details below, or upload a product file.',true);return;
+  if(!value&&!selectedProductFiles.length){
+    showAnalyzeError('Add a product file or paste a product link to start your free audit.');return;
   }
   if(value){
     const candidate=/^[a-z][a-z0-9+.-]*:/i.test(value)?value:`https://${value}`;
@@ -262,7 +259,7 @@ async function startAnalysis(){
       const url=new URL(candidate);
       if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!url.hostname.includes('.'))throw new Error('invalid');
       state.url=url.href;
-    }catch{showAnalyzeError('Enter a public website such as google.com or https://example.com/product, or leave the link blank.',false);return;}
+    }catch{showAnalyzeError('Enter a valid public product link, or remove the link and upload your files.');return;}
   }else state.url='';
   try{sessionStorage.removeItem('salefix-analysis')}catch{}
   state.analyzing=true;const controller=new AbortController();activeAnalysisController=controller;nav('loading');
@@ -277,11 +274,11 @@ async function startAnalysis(){
   try{
     const fileExtracts=selectedProductFiles.length?await extractProductFiles(selectedProductFiles,{signal:controller.signal,onProgress(message){const el=document.getElementById('scan-notice-text');if(el)el.textContent=message;}}):[];
     if(controller.signal.aborted){
-      if(timedOut&&routeFromHash()==='loading')showAnalyzeError('File inspection timed out. Try fewer pages or smaller product files.',false);
+      if(timedOut&&routeFromHash()==='loading')showAnalyzeError('File inspection timed out. Try fewer pages or smaller product files.');
       return;
     }
-    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName,fileExtracts}),signal:controller.signal});
-    const data=await res.json();if(controller.signal.aborted){if(timedOut&&routeFromHash()==='loading')showAnalyzeError('Analysis timed out. Please try again or add your product description manually.',true);return;}if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,fileExtracts}),signal:controller.signal});
+    const data=await res.json();if(controller.signal.aborted){if(timedOut&&routeFromHash()==='loading')showAnalyzeError('Analysis timed out. Retry, or upload the product files instead of using a link.');return;}if(!res.ok)throw new Error(data.error||'Could not analyze this product. Try a product file or a different link.');
     state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}
     state.analyzing=false;
     if(routeFromHash()==='loading')nav('results');
@@ -291,17 +288,16 @@ async function startAnalysis(){
       return;
     }
     const message=String(e.message||e);
-    const needsManual=/manual|timed out|could not|website|site |http \d|fetch|readable|blocked|html|redirect|content/i.test(message);
-    if(routeFromHash()==='loading')showAnalyzeError(message,needsManual);
-    else{state.error=message;state.showManualDetails=state.showManualDetails||needsManual;state.analyzing=false;}
+    const helpful=/manual|timed out|could not|website|site |http \d|fetch|readable|blocked|html|redirect|content/i.test(message);
+    const friendly=helpful&&!selectedProductFiles.length?`${message} You can upload your product file instead.`:message;
+    if(routeFromHash()==='loading')showAnalyzeError(friendly);
+    else{state.error=friendly;state.analyzing=false;}
   }finally{clearTimeout(slowNotice);clearTimeout(requestDeadline);if(activeAnalysisController===controller)activeAnalysisController=null;}
 }
 document.addEventListener('submit',e=>{
-  if(e.target.id==='hero-form'){e.preventDefault();state.url=$('#hero-url').value.trim();state.showManualDetails=!state.url;state.error='';nav('analyze');}
   if(e.target.id==='analyze-form'){
     e.preventDefault();const data=new FormData(e.target);
-    for(const field of ['url','audience','benefit','manual','productName'])state[field]=String(data.get(field)||'').trim();
-    state.showManualDetails=Boolean($('#manual-details')?.open);
+    state.url=String(data.get('url')||'').trim();
     startAnalysis();
   }
 });
@@ -310,7 +306,6 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('dragover',e=>{if(e.target.closest?.('#product-drop-zone'))e.preventDefault()});
 document.addEventListener('drop',e=>{if(!e.target.closest?.('#product-drop-zone'))return;e.preventDefault();selectProductFiles(e.dataTransfer?.files);});
-document.addEventListener('toggle',e=>{if(e.target?.id==='manual-details')state.showManualDetails=e.target.open;},true);
-document.addEventListener('click',async e=>{if(e.target.closest('#clear-product-files')){selectedProductFiles=[];const input=$('#product-files');if(input)input.value='';updateSelectedFiles();return;}if(e.target.closest('#manual-start')){e.preventDefault();state.url='';state.showManualDetails=true;state.error='';nav('analyze');return;}const copy=e.target.closest('[data-copy-headline]');if(copy){const text=String(state.results?.improvedHeadline||'').trim();const feedback=$('.rf-copy-feedback');if(!text){if(feedback)feedback.textContent='No suggestion available to copy.';return;}try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{const field=document.createElement('textarea');field.value=text;field.style.position='fixed';field.style.left='-9999px';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw new Error('Clipboard not available');}if(feedback)feedback.textContent='Headline copied!';}catch{if(feedback)feedback.textContent='Could not copy automatically. Please select the headline text above.';}return;}if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
+document.addEventListener('click',async e=>{if(e.target.closest('#clear-product-files')){selectedProductFiles=[];const input=$('#product-files');if(input)input.value='';updateSelectedFiles();return;}const copy=e.target.closest('[data-copy-headline]');if(copy){const text=String(state.results?.improvedHeadline||'').trim();const feedback=$('.rf-copy-feedback');if(!text){if(feedback)feedback.textContent='No suggestion available to copy.';return;}try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{const field=document.createElement('textarea');field.value=text;field.style.position='fixed';field.style.left='-9999px';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw new Error('Clipboard not available');}if(feedback)feedback.textContent='Headline copied!';}catch{if(feedback)feedback.textContent='Could not copy automatically. Please select the headline text above.';}return;}if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
 window.addEventListener('hashchange',()=>{if(state.analyzing&&lastRenderedHash==='#/loading'&&routeFromHash()!=='loading'){activeAnalysisController?.abort();state.analyzing=false;}if(location.hash!==lastRenderedHash)render()});
 render();
