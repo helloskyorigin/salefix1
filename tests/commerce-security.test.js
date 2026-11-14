@@ -5,7 +5,8 @@ import {commerceReady,checkoutProduct,createDodoSession,verifyDodoWebhook,verifi
 import {enforceRateLimit} from '../lib/rate-limit.js';
 import {pageContent,htmlPage,validatePublicLink} from '../lib/public-page.js';
 import checkoutHandler from '../api/checkout.js';
-import webhookHandler from '../api/dodo-webhook.js';
+import webhookHandler,{rawBody} from '../api/dodo-webhook.js';
+import {Readable} from 'node:stream';
 import publishHandler from '../api/publish.js';
 
 const env={
@@ -109,4 +110,10 @@ test('email fulfillment never delivers a link without an actual secure token',as
   }});
   assert.equal(message.to[0],'buyer@example.com');
   assert.match(message.text,/#\/kit\?access=/);
+});
+
+test('raw signed webhook stream is read without triggering Vercel lazy body getter',async()=>{
+  const request=Readable.from([Buffer.from('{"type":'),Buffer.from('"payment.succeeded"}')]);
+  Object.defineProperty(request,'body',{get(){throw Error('Never use the parsed body getter for signed webhooks');}});
+  assert.equal(await rawBody(request),'{"type":"payment.succeeded"}');
 });
