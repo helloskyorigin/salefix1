@@ -1,0 +1,41 @@
+name: SaleFix production smoke test
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-http-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Wait for the automatic Vercel deployment and check public routes
+        shell: bash
+        env:
+          BASE_URL: https://salefix1-satyambihar422-2629s-projects.vercel.app
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            echo "::group::Smoke attempt $attempt"
+            landing_code="$(curl --retry 1 --connect-timeout 8 --max-time 18 -sSL -o /tmp/salefix-home -w '%{http_code}' "$BASE_URL/" || true)"
+            script_code="$(curl --retry 1 --connect-timeout 8 --max-time 18 -sSL -o /tmp/salefix-app -w '%{http_code}' "$BASE_URL/app.js" || true)"
+            api_code="$(curl --retry 1 --connect-timeout 8 --max-time 18 -sSL -o /tmp/salefix-health -w '%{http_code}' "$BASE_URL/api/health" || true)"
+            echo "home=$landing_code app_js=$script_code api_health=$api_code"
+            if [[ "$landing_code" == '200' && "$script_code" == '200' && "$api_code" == '200' ]] && grep -q '<title>SaleFix' /tmp/salefix-home && grep -q 'ok' /tmp/salefix-health; then
+              echo 'PASS: landing, JS bundle and serverless health all respond correctly'
+              exit 0
+            fi
+            echo 'Home response prefix:'
+            head -c 220 /tmp/salefix-home || true
+            echo
+            echo 'API response prefix:'
+            head -c 220 /tmp/salefix-health || true
+            echo
+            echo "::endgroup::"
+            sleep 12
+          done
+          echo 'Deployment smoke failed. Check Vercel project protection, output directory, or function build logs.'
+          exit 1
