@@ -47,6 +47,7 @@ async function visitAndAudit(viewport){
     await page.locator('#rv-report').waitFor({state:'visible'});
     assert.equal(await page.locator('[data-rv-reviewed="0"]').isChecked(),true);
     await page.locator('[data-rv-copy-fix="0"]').click();
+    await page.waitForFunction(()=>/Copied!|Could not copy/.test(document.querySelector('#rv-fix-feedback-0')?.textContent||''),null,{timeout:8000});
     assert.match(await page.locator('#rv-fix-feedback-0').textContent(),/Copied!|Could not copy/);
     const downloadReady=page.waitForEvent('download');
     await page.locator('[data-rv-download]').first().click();
