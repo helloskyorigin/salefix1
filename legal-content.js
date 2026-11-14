@@ -21,16 +21,16 @@ const policies={
       ['Your content and responsibilities','Only upload or link material you own or are authorized to analyze. Check every suggested claim before use. You are responsible for the accuracy of your product, compliance, real checkout link, delivery obligations and any buyer communications. Do not create misleading earnings claims, fake testimonials or illegal offers.'],
       ['Ownership of materials','You retain your rights to submitted materials. You authorize processing only as needed to deliver the requested service. You may edit and use lawful generated materials, but must respect other parties’ intellectual property rights.'],
       ['No prediction of sales','A content audit is not a conversion forecast and no number of sales, customers or earnings is promised.'],
-      ['Pricing and purchase conditions','When enabled, one product campaign Sales Kit costs US$49 once, not a subscription. If checkout is unavailable, SaleFix cannot start a paid order. Any taxes and supported payment currencies are displayed by the payment provider. Review the <a href="#/refunds">Refund Policy</a> before paying.'],
+      ['Pricing and purchase conditions','When enabled, one product campaign Sales Kit costs US$29 once, not a subscription. If checkout is unavailable, SaleFix cannot start a paid order. Any taxes and supported payment currencies are displayed by the payment provider. Review the <a href="#/refunds">Refund Policy</a> before paying.'],
       ['Publishing','Paid buyers may publish a public sales page that links to their existing checkout. Pages and asset edits must be reviewed by the buyer. Hosted page records can expire after 365 days and availability depends on the continued operation of the service. Do not publish private information or deceptive claims.'],
       ['Service availability and abuse','Do not attempt to overload services, bypass access controls or abuse file scanning. We may limit unreasonable traffic and remove or suspend abusive published content where lawful. We may alter or discontinue features, subject to applicable consumer protections.'],
       ['Support and rights','Nothing excludes mandatory consumer protections. Contact '+email+' for support, legal questions or complaints.']
     ]
   },
   refunds:{
-    label:'BILLING & PURCHASES',title:'Refund Policy',intro:'Information about optional US$49 digital-product purchases.',
+    label:'BILLING & PURCHASES',title:'Refund Policy',intro:'Information about optional US$29 digital-product purchases.',
     items:[
-      ['Payment availability','The free product audit does not require payment. US$49 checkout is only offered if secure merchant checkout, payment verification, email delivery and access recovery are configured. If unavailable, no order can be started.'],
+      ['Payment availability','The free product audit does not require payment. US$29 checkout is only offered if secure merchant checkout, payment verification, email delivery and access recovery are configured. If unavailable, no order can be started.'],
       ['Delivery and access','Once the payment provider confirms a successful purchase and the webhook is verified, an access link is sent to the email used during checkout. Links expire after 7 days; the buyer may request a fresh link from the purchase-recovery screen.'],
       ['Eligible issues','If you are charged twice, do not receive delivery or encounter a material defect, email us within 7 days for prompt investigation. If the issue cannot be resolved, eligible refunds are processed through the original payment provider, without limiting applicable statutory rights.'],
       ['Digital purchases','Digital assets may be delivered immediately. A change of mind after delivery does not automatically entitle a buyer to a refund, but mandatory consumer cancellation and refund laws continue to apply. Sales results and income are not promised.'],
