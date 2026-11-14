@@ -125,7 +125,9 @@ function sourceFiles(result,icon){
     if(positiveCount(f.slides))facts.push(positiveCount(f.slides)+' slides');
     if(positiveCount(f.sheets))facts.push(positiveCount(f.sheets)+' sheets');
     if(Array.isArray(f.entries)&&f.entries.length)facts.push(f.entries.length+' entries');
-    return '<li class="rv-source-file"><span class="rv-file-icon">'+icon('layers',19)+'</span><span class="rv-file-main"><strong>'+esc(text(f.name,'Unnamed file'))+'</strong><small>'+esc(facts.filter(Boolean).join(' · '))+'</small></span><span class="rv-file-state '+(f.inspected?'is-read':'')+'">' +esc(inspectionLabel(f))+ '</span></li>';
+    const image=['png','jpg','jpeg','webp','svg'].includes(text(f.ext).toLowerCase());
+    const badge=image?'Metadata':f.inspected?'Sampled':'Limited';
+    return '<li class="rv-source-file"><span class="rv-file-icon">'+icon('layers',19)+'</span><span class="rv-file-main"><strong>'+esc(text(f.name,'Unnamed file'))+'</strong><small>'+esc(facts.filter(Boolean).join(' · '))+'</small><small class="rv-file-scope">'+esc(inspectionLabel(f))+'</small></span><span class="rv-file-state '+(f.inspected&&!image?'is-read':'')+'">'+badge+'</span></li>';
   }).join('');
   const notices=Array.isArray(review.notices)?review.notices.filter(Boolean).slice(0,12):[];
   return '<div class="rv-coverage-block"><h3>Uploaded content</h3><ul class="rv-source-files">'+(rows||'<li>No file inventory available.</li>')+'</ul>'+
