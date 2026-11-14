@@ -1,4 +1,4 @@
-import {commerceReady,verifyDodoWebhook,verifiedSale,emailKitLink} from '../lib/payment.js';
+import {commerceReady,verifyDodoWebhook,verifiedSale,emailKitLink,KIT_PRICE_CENTS} from '../lib/payment.js';
 import {getJSON,saveJSON,setOnce,redisCommand,keyHash} from '../lib/redis.js';
 import {issueKitAccess} from '../lib/paid-kit.js';
 
@@ -95,7 +95,7 @@ export default async function handler(req,res){
 
     if(!record.deliveryCompletedAt){
       const token=issueKitAccess({
-        verifiedProviderEvent:true,status:'succeeded',amountCents:4900,currency:'USD',
+        verifiedProviderEvent:true,status:'succeeded',amountCents:KIT_PRICE_CENTS,currency:'USD',
         paymentId:sale.paymentId,email:sale.email,product:record.product
       },process.env.SALEFIX_KIT_SECRET,Math.floor(record.paidAt/1000));
       await emailKitLink({
