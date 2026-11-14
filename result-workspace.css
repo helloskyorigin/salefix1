@@ -118,6 +118,7 @@
 .results-v3 .rv-file-main{display:block;min-width:0;flex:1}
 .results-v3 .rv-file-main strong{display:block;color:#273754;font-size:11px;font-weight:780;overflow-wrap:anywhere}
 .results-v3 .rv-file-main small{display:block;font-size:10px;line-height:1.4;color:#8791a6;margin-top:4px;overflow-wrap:anywhere}
+.results-v3 .rv-file-main .rv-file-scope{font-size:9px;line-height:1.4;color:#657b9c;margin-top:5px}
 .results-v3 .rv-file-state{font-size:9px;line-height:1.2;background:#f4f5f8;color:#6d7790;padding:7px 8px;border-radius:9px;font-weight:750;max-width:74px;text-align:center;flex:none}
 .results-v3 .rv-file-state.is-read{background:#eaf8ee;color:#238552}
 .results-v3 .rv-coverage-notes{border:1px solid #e7ecf6;border-radius:13px;margin-top:15px;overflow:hidden}
