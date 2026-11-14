@@ -1,4 +1,4 @@
-import {commerceReady,emailKitLink} from '../lib/payment.js';
+import {commerceReady,emailKitLink,KIT_PRICE_CENTS} from '../lib/payment.js';
 import {getJSON,keyHash} from '../lib/redis.js';
 import {enforceRateLimit} from '../lib/rate-limit.js';
 import {issueKitAccess} from '../lib/paid-kit.js';
@@ -18,7 +18,7 @@ export default async function handler(req,res){
       const order=await getJSON('salefix:order:'+index.orderId);
       if(order?.status==='paid'&&order.email===email){
         const token=issueKitAccess({verifiedProviderEvent:true,status:'succeeded',
-          amountCents:4900,currency:'USD',paymentId:order.paymentId,email,product:order.product
+          amountCents:KIT_PRICE_CENTS,currency:'USD',paymentId:order.paymentId,email,product:order.product
         },process.env.SALEFIX_KIT_SECRET);
         await emailKitLink({to:email,token});
       }
