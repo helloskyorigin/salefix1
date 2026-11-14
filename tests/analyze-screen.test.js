@@ -15,9 +15,11 @@ test('Analyze is a two-input optional form and URL errors preserve the entry',as
   assert.match(app.innerHTML,/Upload product files/);
   assert.match(app.innerHTML,/Product page link/);
   assert.equal((app.innerHTML.match(/<input/g)||[]).length,2);
-  for(const field of ['audience','benefit','productName','manual'])assert.doesNotMatch(app.innerHTML,new RegExp('name="'+field+'"'));
+  for(const field of ['audience','benefit','productName'])assert.doesNotMatch(app.innerHTML,new RegExp('name="'+field+'"'));
+  assert.match(app.innerHTML,/textarea id="product-description" name="manual" maxlength="500"/);
+  assert.match(app.innerHTML,/id="product-description-count"[^>]*>0\/500<\/output>/);
   assert.doesNotMatch(app.innerHTML,/manual-details|hero-url/);
-  const values={url:'https://example.com/product'};
+  const values={url:'https://example.com/product',manual:'My digital product helps creators plan and publish their launches.'};
   events.submit({target:{id:'analyze-form',values},preventDefault(){}});
   for(let i=0;i<8;i++)await new Promise(done=>setTimeout(done,0));
   assert.equal(location.hash,'#/analyze');
@@ -25,6 +27,7 @@ test('Analyze is a two-input optional form and URL errors preserve the entry',as
   assert.match(app.innerHTML,/Product website timed out/);
   assert.match(app.innerHTML,/upload your product file instead/i);
   assert.match(app.innerHTML,/value="https:\/\/example.com\/product"/);
+  assert.match(app.innerHTML,/My digital product helps creators plan/);
   let aborted=false;
   globalThis.fetch=async (_url,opts)=>new Promise((_resolve,reject)=>{
     opts.signal.addEventListener('abort',()=>{aborted=true;reject(new Error('aborted'));});
