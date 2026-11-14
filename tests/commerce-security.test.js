@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
-import {commerceReady,checkoutProduct,createDodoSession,verifyDodoWebhook,verifiedSale,emailKitLink} from '../lib/payment.js';
+import {commerceReady,checkoutProduct,createDodoSession,verifyProviderProduct,verifyDodoWebhook,verifiedSale,emailKitLink} from '../lib/payment.js';
 import {enforceRateLimit} from '../lib/rate-limit.js';
 import {pageContent,htmlPage,validatePublicLink} from '../lib/public-page.js';
 import checkoutHandler from '../api/checkout.js';
@@ -29,16 +29,28 @@ test('payment remains blocked with one missing merchant, email or storage prereq
 });
 test('Dodo session is server-priced and accepts no arbitrary browser-supplied amount',async()=>{
   const calls=[];
+  const providerProduct={product_id:'pdt_29_usd',is_recurring:false,price:{type:'one_time_price',currency:'USD',price:2900}};
   const fake=async(url,opts)=>{
-    calls.push({url,opts,body:JSON.parse(opts.body)});
+    calls.push({url,opts,body:opts.body?JSON.parse(opts.body):null});
+    if(url.endsWith('/products/pdt_29_usd'))return {ok:true,json:async()=>providerProduct};
     return {ok:true,json:async()=>({checkout_url:'https://checkout.dodopayments.com/session/test',session_id:'s123'})};
   };
   const session=await createDodoSession({orderId:'11111111-2222-4333-8444-555555555555',env,fetchImpl:fake});
   assert.match(session.checkoutUrl,/checkout.dodopayments.com/);
-  assert.equal(calls[0].url,'https://test.dodopayments.com/checkouts');
-  assert.deepEqual(calls[0].body.product_cart,[{product_id:'pdt_29_usd',quantity:1}]);
-  assert.equal(calls[0].body.metadata.salefix_order,'11111111-2222-4333-8444-555555555555');
-  assert.equal(calls[0].body.billing_currency,'USD');
+  assert.equal(calls[0].url,'https://test.dodopayments.com/products/pdt_29_usd');
+  assert.equal(calls[1].url,'https://test.dodopayments.com/checkouts');
+  assert.deepEqual(calls[1].body.product_cart,[{product_id:'pdt_29_usd',quantity:1}]);
+  assert.equal(calls[1].body.metadata.salefix_order,'11111111-2222-4333-8444-555555555555');
+  assert.equal(calls[1].body.billing_currency,'USD');
+  assert.equal(verifyProviderProduct(providerProduct,'pdt_29_usd'),true);
+  assert.equal(verifyProviderProduct({...providerProduct,price:{...providerProduct.price,price:4900}},'pdt_29_usd'),false);
+  assert.equal(verifyProviderProduct({...providerProduct,is_recurring:true},'pdt_29_usd'),false);
+  assert.equal(verifyProviderProduct({...providerProduct,price:{...providerProduct.price,pay_what_you_want:true}},'pdt_29_usd'),false);
+  assert.equal(verifyProviderProduct({...providerProduct,price:{...providerProduct.price,discount_bps:500}},'pdt_29_usd'),false);
+  await assert.rejects(createDodoSession({
+    orderId:'11111111-2222-4333-8444-555555555555',env,
+    fetchImpl:async()=>({ok:true,json:async()=>({...providerProduct,price:{...providerProduct.price,price:4900}})})
+  }),/exactly \$29 USD/);
   assert.ok(!JSON.stringify(calls[0].body).includes('user_requested_price'));
   assert.equal(checkoutProduct({title:'Real Product',price:'$0',url:'https://seller.example/product'}).title,'Real Product');
   assert.throws(()=>checkoutProduct({title:'Real Product',url:''}),/purchase link/);
