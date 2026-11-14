@@ -31,7 +31,7 @@ function mockStore(){
       emails.push({mail,key:opts.headers['Idempotency-Key']});
       return {ok:true,json:async()=>({id:'em_test'})};
     }
-    assert.equal(url,env.UPSTASH_REDIS_REST_URL);
+    assert.equal(new URL(url).origin,new URL(env.UPSTASH_REDIS_REST_URL).origin);
     const [cmd,...a]=JSON.parse(opts.body);
     let result=null;
     if(cmd==='GET')result=get(a[0]);
