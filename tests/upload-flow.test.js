@@ -43,7 +43,7 @@ test('a real text file submits and produces a results screen WITHOUT a website U
   assert.match(selected.innerHTML,/My Creator Playbook/);
   assert.equal(clear.hidden,false);
 
-  const values={url:'',audience:'creators',benefit:'organize their launch',manual:'',productName:'Creator Playbook'};
+  const values={url:''};
   events.submit({target:{id:'analyze-form',values},preventDefault(){}});
   assert.equal(location.hash,'#/loading');
   await requestStarted;
@@ -52,6 +52,7 @@ test('a real text file submits and produces a results screen WITHOUT a website U
   assert.ok(submitted);
   assert.equal(submitted.url,'');
   assert.equal(submitted.fileExtracts.length,1);
+  assert.deepEqual(Object.keys(submitted).sort(),['fileExtracts','url']);
   assert.match(submitted.fileExtracts[0].text,/30-day creator planner/);
   assert.equal(submitted.fileExtracts[0].inspected,true);
   assert.equal(submitted.fileExtracts[0].size,file.size);
