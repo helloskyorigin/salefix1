@@ -5,6 +5,7 @@ export default function handler(req,res){
   return res.status(200).json({
     checkoutReady:commerceReady(),
     publishingReady:commerceReady(),
-    aiFileReviewEnabled:Boolean(process.env.GEMINI_API_KEY&&process.env.SALEFIX_ENABLE_FILE_AI==='true')
+    aiFileReviewEnabled:Boolean(process.env.GEMINI_API_KEY&&process.env.SALEFIX_ENABLE_FILE_AI==='true'),
+    aiHeadlineEnabled:Boolean(process.env.GEMINI_API_KEY&&process.env.SALEFIX_ENABLE_HEADLINE_AI==='true')
   });
 }
