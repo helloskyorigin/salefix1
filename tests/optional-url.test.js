@@ -51,6 +51,8 @@ test('landing starts one two-input form and blank input has clear validation',as
   assert.match(app.innerHTML,/Product page link/);
   assert.match(app.innerHTML,/Upload product files/);
   assert.equal((app.innerHTML.match(/<input/g)||[]).length,2);
+  assert.equal((app.innerHTML.match(/<textarea/g)||[]).length,1);
+  assert.match(app.innerHTML,/maxlength="500"/);
   assert.doesNotMatch(app.innerHTML,/type="url" name="url" required/);
   const values={url:''};
   events.submit({target:{id:'analyze-form',values},preventDefault(){}});
