@@ -35,7 +35,7 @@ export function auditFindings(result){
   }).slice(0,8);
 }
 function auditKey(result){
-  const source=String(result?.product?.title||'')+'|'+String(result?.product?.url||'')+'|'+auditFindings(result).map(f=>f.id+'|'+f.label+'|'+f.fix).join('|');
+  const source=String(result?.product?.title||'')+'|'+String(result?.product?.url||'')+'|'+auditFindings(result).map(f=>f.id+'|'+f.label+'|'+f.evidence+'|'+f.fix).join('|');
   let hash=2166136261;
   for(let i=0;i<source.length;i++)hash=Math.imul(hash^source.charCodeAt(i),16777619);
   return 'salefix-reviewed:'+((hash>>>0).toString(36));
@@ -97,7 +97,7 @@ export function auditPlainText(result){
   if(result?.fileAudit){
     lines.push('','INSPECTED FILES');
     const files=Array.isArray(result.fileAudit.files)?result.fileAudit.files:[];
-    for(const f of files)lines.push('- '+text(f.name,'Unnamed file')+' — '+(f.inspected?'Readable content inspected':'Metadata only'));
+    for(const f of files)lines.push('- '+text(f.name,'Unnamed file')+' — '+inspectionLabel(f));
     if(Array.isArray(result.fileAudit.notices)&&result.fileAudit.notices.length)lines.push('','FILE LIMITATIONS',...result.fileAudit.notices.map(x=>'- '+text(x)));
   }
   if(Array.isArray(result?.salesIssues)&&result.salesIssues.length){
@@ -110,6 +110,11 @@ export function auditPlainText(result){
   lines.push('','IMPORTANT LIMITATIONS',text(result?.disclaimer,'This report reflects only the readable content supplied. It does not predict sales.'),'','Content recommendations, not a sales score or a prediction of purchases.','Review facts, prices and claims before publishing.','Generated with SaleFix.');
   return lines.filter(x=>x!==null&&x!==undefined).join('\n');
 }
+function inspectionLabel(file){
+  const ext=text(file?.ext).toLowerCase();
+  if(['png','jpg','jpeg','webp','svg'].includes(ext))return 'Image metadata checked; visuals not assessed';
+  return file?.inspected?'Content or file structure sampled':'Metadata only';
+}
 function sourceFiles(result,icon){
   const review=result?.fileAudit;
   if(!review)return '';
@@ -120,7 +125,7 @@ function sourceFiles(result,icon){
     if(positiveCount(f.slides))facts.push(positiveCount(f.slides)+' slides');
     if(positiveCount(f.sheets))facts.push(positiveCount(f.sheets)+' sheets');
     if(Array.isArray(f.entries)&&f.entries.length)facts.push(f.entries.length+' entries');
-    return '<li class="rv-source-file"><span class="rv-file-icon">'+icon('layers',19)+'</span><span class="rv-file-main"><strong>'+esc(text(f.name,'Unnamed file'))+'</strong><small>'+esc(facts.filter(Boolean).join(' · '))+'</small></span><span class="rv-file-state '+(f.inspected?'is-read':'')+'">'+(f.inspected?'Text inspected':'Metadata only')+'</span></li>';
+    return '<li class="rv-source-file"><span class="rv-file-icon">'+icon('layers',19)+'</span><span class="rv-file-main"><strong>'+esc(text(f.name,'Unnamed file'))+'</strong><small>'+esc(facts.filter(Boolean).join(' · '))+'</small></span><span class="rv-file-state '+(f.inspected?'is-read':'')+'">' +esc(inspectionLabel(f))+ '</span></li>';
   }).join('');
   const notices=Array.isArray(review.notices)?review.notices.filter(Boolean).slice(0,12):[];
   return '<div class="rv-coverage-block"><h3>Uploaded content</h3><ul class="rv-source-files">'+(rows||'<li>No file inventory available.</li>')+'</ul>'+
