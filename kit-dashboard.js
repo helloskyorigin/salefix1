@@ -7,7 +7,7 @@ const escapeFile=s=>String(s||'').replace(/[^a-z0-9_-]+/ig,'-').replace(/^-|-$/g
 const approvedUrl=u=>{try{const p=new URL(u);return ['https:','http:'].includes(p.protocol)?p.href:''}catch{return ''}};
 
 export function kitShell(){return `<div class="kit-checking" role="status" aria-live="polite"><div class="kit-mark"><img alt="" src="/assets/salefix-logo.png"/></div><h1>Opening your SaleFix workspace</h1><p>Checking your secure purchase access…</p></div>`}
-function lockedScreen(message){return `<header class="site-header"><div class="container header-inner"><a class="logo" href="#/"><img src="/assets/salefix-logo.png" alt=""/><span>SaleFix</span></a><a class="button button-small" href="#/">Back home</a></div></header><main class="kit-access-wrap"><div class="kit-access-symbol" aria-hidden="true">✦</div><h1>Your Full Sales Kit</h1><p>${esc(message||'Open the secure link from your purchase email to access your kit.')}</p><a class="kit-access-contact" href="mailto:hello.skyorigin@gmail.com">Contact support: hello.skyorigin@gmail.com</a><div class="kit-access-help">The $49 checkout is currently unavailable. No payments can be completed through this version of SaleFix.</div></main>`}
+function lockedScreen(message){return `<header class="site-header"><div class="container header-inner"><a class="logo" href="#/"><img src="/assets/salefix-logo.png" alt=""/><span>SaleFix</span></a><a class="button button-small" href="#/">Back home</a></div></header><main class="kit-access-wrap"><div class="kit-access-symbol" aria-hidden="true">✦</div><h1>Your Full Sales Kit</h1><p>${esc(message||'Open the secure link from your purchase email to access your kit.')}</p><a class="kit-access-contact" href="mailto:hello.skyorigin@gmail.com">Contact support: hello.skyorigin@gmail.com</a><div class="kit-access-help">If you purchased a kit, try requesting a fresh access link or contact support.</div></main>`}
 
 export async function hydrateKit(){
   const root=document.querySelector('#app');
@@ -24,7 +24,7 @@ export async function hydrateKit(){
     kitState.kit=data.kit;kitState.token=token;kitState.tab='overview';kitState.notice='';kitState.kit.checkoutUrl=/\/p\/[a-f0-9-]{36}$/.test(kitState.kit.product.url)?'':kitState.kit.product.url;
     try{
       const edits=JSON.parse(localStorage.getItem(`salefix-kit-edits:${kitState.kit.campaignId}`)||'null');
-      if(edits){if(typeof edits.headline==='string')kitState.kit.headline=edits.headline.slice(0,180);if(typeof edits.subheadline==='string')kitState.kit.subheadline=edits.subheadline.slice(0,1500);if(Array.isArray(edits.posts)&&edits.posts.length===10)kitState.kit.posts=edits.posts.map(x=>String(x).slice(0,2200));}
+      if(edits){if(typeof edits.headline==='string')kitState.kit.headline=edits.headline.slice(0,180);if(typeof edits.subheadline==='string')kitState.kit.subheadline=edits.subheadline.slice(0,1500);if(typeof edits.checkoutUrl==='string')kitState.kit.checkoutUrl=edits.checkoutUrl.slice(0,1800);if(Array.isArray(edits.posts)&&edits.posts.length===10)kitState.kit.posts=edits.posts.map(x=>String(x).slice(0,2200));}
     }catch{}
     root.innerHTML=renderVerifiedKit(kitState.kit);
   }catch(error){if(location.hash===hash)root.innerHTML=lockedScreen(error.message||'This purchase link could not be verified.')}
