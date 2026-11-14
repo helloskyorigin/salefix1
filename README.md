@@ -1,15 +1,15 @@
 # SaleFix — MVP
 
-A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix growth-arrow logo, free page analysis and a clearly gated $49 paid funnel.
+A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix growth-arrow logo, free page analysis and a clearly gated $29 paid funnel.
 
 ## Current implementation
 
-- Fully responsive landing page, **two-choice audit form (file upload OR product URL; either one is enough)**, real loading state, personalized free report, before/after headline and $49 checkout preview. No repeated URL field, optional 500-character product description with live counter, and no extra audience, benefit or product-name questions.
+- Fully responsive landing page, **two-choice audit form (file upload OR product URL; either one is enough)**, real loading state, personalized free report, before/after headline and $29 checkout preview. No repeated URL field, optional 500-character product description with live counter, and no extra audience, benefit or product-name questions.
 - Real server-side retrieval of publicly readable HTML, up to three specific content observations and source-backed headline advice.
 - Optional Gemini API integration with **separate opt-in flags** for headline suggestions and file-content suggestions grounded in exact quotes from uploaded files. Deterministic, evidence-based fallbacks work without a key.
 - Public URL protections: HTTP(S) only, nonstandard ports blocked, private IPs/hostnames blocked, redirects rechecked, DNS pinned to resolved public IP, request timeout and response size limit.
 - When a website blocks crawling, the two-choice form suggests uploading product files instead. Backend retains legacy manual-copy support for integrations but the public form no longer exposes that extra field.
-- One-time $49 pricing, no login required for free audit.
+- One-time $29 pricing, no login required for free audit.
 - **NO fake testimonials, sales figures, readiness percentages, or fake progress.**
 
 ## Local setup
@@ -36,7 +36,7 @@ Open http://localhost:3000 . To enable AI-assisted headlines, configure `GEMINI_
 
 1. Make the Vercel **production domain public** under Project → Security → Deployment Protection, selecting Standard Protection or None. A 302 to `vercel.com/sso-api` means the deployment is still protected; this cannot be fixed in GitHub source.
 2. For **paid checkout or billable Gemini analysis**, connect Upstash Redis and add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. The free deterministic audit works without this setup but uses a best-effort per-instance limit; before major traffic, enable platform-level abuse protection.
-3. Obtain an approved **Dodo Payments merchant account**. The configured `DODO_PRODUCT_ID` must be a genuine one-time **USD $49** product with no discounts. Merchant identity, banking and age eligibility must comply with provider rules. Never use someone else's identity to bypass verification.
+3. Obtain an approved **Dodo Payments merchant account**. The configured `DODO_PRODUCT_ID` must be a genuine one-time **USD $29** product with no discounts. Merchant identity, banking and age eligibility must comply with provider rules. Never use someone else's identity to bypass verification.
 4. In **test_mode**, configure `DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_WEBHOOK_KEY`, `SALEFIX_PUBLIC_ORIGIN`, `SALEFIX_KIT_SECRET` (32+ random chars), `RESEND_API_KEY`, and `SALEFIX_DELIVERY_FROM` (a verified sender domain). Subscribe the Dodo webhook to `https://YOUR_DOMAIN/api/dodo-webhook` for payment success, refunds and dispute-related events.
 5. Verify a full **sandbox** purchase: correct USD amount, product ID, webhook delivery, email link, `/api/paid-kit`, link reissue, public-page publish and refund revocation. The paid checkout requires the seller's real public product checkout URL; a file-only free audit can be run without one. Test duplicate, tampered and out-of-order webhooks. Then explicitly opt in with `SALEFIX_PAYMENTS_ENABLED=true` and `DODO_PAYMENTS_ENVIRONMENT=live_mode` only after merchant approval and successful production review.
 6. Keep Gemini paid requests under control: `GEMINI_API_KEY` optional; `SALEFIX_ENABLE_FILE_AI=false` until cost budgets and monitoring are ready.
@@ -49,12 +49,12 @@ Open http://localhost:3000 . To enable AI-assisted headlines, configure `GEMINI_
 
 ## Product flow
 
-`Landing → Optional file/link + optional 500-character description → Free audit → $49 checkout (if configured) → Verified webhook → Email link → Paid kit → Optional hosted page`
+`Landing → Optional file/link + optional 500-character description → Free audit → $29 checkout (if configured) → Verified webhook → Email link → Paid kit → Optional hosted page`
 
 ## Brand / design
 
 - Name: SaleFix (platform-agnostic)
-- One-time price: $49
+- One-time price: $29
 - Soft white + light blue, 24px radius, shadow-only/borderless cards
 - Approved icon: `assets/salefix-logo.png`
 - Mobile-first responsive layout
