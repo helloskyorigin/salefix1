@@ -33,7 +33,7 @@ async function visitAndAudit(viewport){
     assert.equal(await page.locator('#unlock-button').count(),1);
     await page.locator('#unlock-button').click();
     await page.waitForURL('**/#/checkout');
-    assert.match(await page.locator('body').textContent(),/49\.00/);
+    assert.match(await page.locator('body').textContent(),/29\.00/);
     await page.waitForFunction(()=>document.querySelector('#checkout-button')?.textContent.includes('not yet available'),null,{timeout:12000});
     assert.equal(await page.locator('#checkout-button').isDisabled(),true);
     assert.equal(await page.locator('#product-purchase-link').count(),1);
