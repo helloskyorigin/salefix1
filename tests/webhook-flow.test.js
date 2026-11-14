@@ -11,7 +11,7 @@ const email='test-buyer@example.com';
 const env={
   VERCEL:'1',VERCEL_ENV:'preview',
   SALEFIX_PAYMENTS_ENABLED:'true',DODO_PAYMENTS_ENVIRONMENT:'test_mode',
-  DODO_PAYMENTS_API_KEY:'local-test-only',DODO_PRODUCT_ID:'pdt_test-49',
+  DODO_PAYMENTS_API_KEY:'local-test-only',DODO_PRODUCT_ID:'pdt_test-29',
   DODO_PAYMENTS_WEBHOOK_KEY:secret,SALEFIX_KIT_SECRET:'z'.repeat(48),
   SALEFIX_PUBLIC_ORIGIN:'https://salefix.example',
   RESEND_API_KEY:'re_test',SALEFIX_DELIVERY_FROM:'SaleFix <sales@example.com>',
@@ -61,8 +61,8 @@ function signed(type,data){
 }
 function succeeded(){
   return {
-    status:'succeeded',payment_id:paymentId,currency:'USD',total_amount:4900,tax:0,
-    product_cart:[{product_id:'pdt_test-49',quantity:1}],
+    status:'succeeded',payment_id:paymentId,currency:'USD',total_amount:2900,tax:0,
+    product_cart:[{product_id:'pdt_test-29',quantity:1}],
     metadata:{salefix_order:orderId},customer:{email}
   };
 }
@@ -72,7 +72,7 @@ async function withMocks(stuff){
   const store=mockStore();
   Object.assign(process.env,env);
   globalThis.fetch=store.fetchImpl;
-  const product={url:'https://store.example/product',title:'Creator Launch Kit',description:'A creator toolkit that helps organize product launches with practical checklists.',headline:'Launch a useful digital product',price:'$49'};
+  const product={url:'https://store.example/product',title:'Creator Launch Kit',description:'A creator toolkit that helps organize product launches with practical checklists.',headline:'Launch a useful digital product',price:'$29'};
   store.set('salefix:order:'+orderId,JSON.stringify({id:orderId,status:'pending',product,createdAt:Date.now()}));
   try{return await stuff(store)}finally{
     globalThis.fetch=prevFetch;
