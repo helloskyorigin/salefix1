@@ -6,7 +6,7 @@ A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix
 
 - Fully responsive landing page, **two-choice audit form (file upload OR product URL; either one is enough)**, real loading state, personalized free report, before/after headline and $49 checkout preview. No repeated URL field, optional 500-character product description with live counter, and no extra audience, benefit or product-name questions.
 - Real server-side retrieval of publicly readable HTML, up to three specific content observations and source-backed headline advice.
-- Optional Gemini API integration for headline suggestions and, only when explicitly enabled, content suggestions grounded in exact quotes from uploaded files. Deterministic, evidence-based fallbacks work without a key.
+- Optional Gemini API integration with **separate opt-in flags** for headline suggestions and file-content suggestions grounded in exact quotes from uploaded files. Deterministic, evidence-based fallbacks work without a key.
 - Public URL protections: HTTP(S) only, nonstandard ports blocked, private IPs/hostnames blocked, redirects rechecked, DNS pinned to resolved public IP, request timeout and response size limit.
 - When a website blocks crawling, the two-choice form suggests uploading product files instead. Backend retains legacy manual-copy support for integrations but the public form no longer exposes that extra field.
 - One-time $49 pricing, no login required for free audit.
@@ -20,7 +20,7 @@ Requires Node.js 20+; zero npm packages.
 npm run dev
 ```
 
-Open http://localhost:3000 . To enable AI-assisted headlines, set `GEMINI_API_KEY` on the server. For optional file-content AI suggestions, also set `SALEFIX_ENABLE_FILE_AI=true` (disabled by default). File content is sent as capped text excerpts, never raw binaries. **Do not enable paid AI usage on the public endpoint before durable rate limits and billing monitoring are in place.** Google Gemini consumer subscriptions are separate from API billing. This dependency-free local server does not automatically read `.env.local`; export your variables in the shell. Run `npm test` to exercise the upload-only flow, real ZIP/Office fixture extraction and backend audit.
+Open http://localhost:3000 . To enable AI-assisted headlines, configure `GEMINI_API_KEY` and explicitly set `SALEFIX_ENABLE_HEADLINE_AI=true` on the server. For optional file-content AI suggestions, also set `SALEFIX_ENABLE_FILE_AI=true` (disabled by default). File content is sent as capped text excerpts, never raw binaries. **Do not enable paid AI usage on the public endpoint before durable rate limits and billing monitoring are in place.** Google Gemini consumer subscriptions are separate from API billing. This dependency-free local server does not automatically read `.env.local`; export your variables in the shell. Run `npm test` to exercise the upload-only flow, real ZIP/Office fixture extraction and backend audit.
 
 ## Deployment
 
