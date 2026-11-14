@@ -45,6 +45,7 @@ test('HTML escapes all user controlled fields, rejects JavaScript images and pre
   assert.match(html,/Assets &lt;script&gt;\.zip/);
   assert.match(html,/Toolkit.pdf/);
   assert.match(html,/Metadata only/);
+  assert.match(html,/Content or file structure sampled/);
   assert.match(html,/Archive was sampled/);
   assert.match(html,/Separate sales-page observations/);
   assert.match(html,/Source price: \$17/);
@@ -60,7 +61,7 @@ test('export is evidence-based readable text, not HTML, and includes the same fi
   assert.match(report,/Suggested: Creator Toolkit with practical launch templates/);
   assert.match(report,/Observed: No README/);
   assert.match(report,/Recommended: Add a short getting-started guide/);
-  assert.match(report,/Toolkit\.pdf — Readable content inspected/);
+  assert.match(report,/Toolkit\.pdf — Content or file structure sampled/);
   assert.match(report,/Archive was sampled/);
   assert.match(report,/ADDITIONAL SALES-PAGE FINDINGS/);
   assert.match(report,/This report reflects|Partial text inspection/);
