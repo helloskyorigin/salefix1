@@ -28,7 +28,7 @@ const paths={
 };
 const icon=(name,size=20)=>`<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.spark}</svg>`;
 const logo=()=>`<a href="#/" class="logo" aria-label="SaleFix home"><img src="/assets/salefix-logo.png" alt=""/><span>SaleFix</span></a>`;
-const state={url:'',results:null,error:'',activeFaq:-1,analyzing:false,scanStarted:0};
+const state={url:'',manual:'',results:null,error:'',activeFaq:-1,analyzing:false,scanStarted:0};
 try{state.results=JSON.parse(sessionStorage.getItem('salefix-analysis')||'null');}catch{}
 let activeAnalysisController=null;
 let selectedProductFiles=[];
@@ -184,7 +184,10 @@ ${state.error?`<div class="error-message analyze-error" role="alert" tabindex="-
 <div class="simple-source-label"><span>${icon('link',18)} Product page link</span><small>Optional</small></div>
 <label class="simple-url-wrap"><span class="sr-only">Product link or domain</span><input type="text" name="url" placeholder="https://yourstore.com/product" maxlength="1200" autocomplete="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="product-url-help" value="${safe(state.url)}"/></label>
 <p class="simple-input-note" id="product-url-help">Gumroad, Payhip or your own sales page.</p>
-<p class="simple-selection-tip">Choose at least one. You can add both for a product + sales-page review.</p>
+<div class="simple-description-head"><label for="product-description">Tell us about your product <small>Optional</small></label><output id="product-description-count" for="product-description" aria-live="off">${state.manual.length}/500</output></div>
+<textarea id="product-description" name="manual" maxlength="500" rows="3" placeholder="What is your product, and who is it for? (Optional)" aria-describedby="product-description-hint product-description-count">${safe(state.manual)}</textarea>
+<p class="simple-input-note" id="product-description-hint">A little context helps personalize the audit. Skip if your file or link explains it.</p>
+<p class="simple-selection-tip">Upload a file or paste a link to start. This description is optional.</p>
 <button type="submit" class="button button-primary full-width jumbo">${icon('spark',19)} Analyze for Free ${icon('arrow',20)}</button>
 <p id="product-file-help" class="simple-privacy">${icon('shield',15)} Files stay in your browser; only extracted text and file details are sent for analysis.</p>
 </form></div></div></main>${footer()}`}
@@ -277,7 +280,7 @@ async function startAnalysis(){
       if(timedOut&&routeFromHash()==='loading')showAnalyzeError('File inspection timed out. Try fewer pages or smaller product files.');
       return;
     }
-    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,fileExtracts}),signal:controller.signal});
+    const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,manual:state.manual,fileExtracts}),signal:controller.signal});
     const data=await res.json();if(controller.signal.aborted){if(timedOut&&routeFromHash()==='loading')showAnalyzeError('Analysis timed out. Retry, or upload the product files instead of using a link.');return;}if(!res.ok)throw new Error(data.error||'Could not analyze this product. Try a product file or a different link.');
     state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}
     state.analyzing=false;
@@ -298,7 +301,17 @@ document.addEventListener('submit',e=>{
   if(e.target.id==='analyze-form'){
     e.preventDefault();const data=new FormData(e.target);
     state.url=String(data.get('url')||'').trim();
+    state.manual=String(data.get('manual')||'').slice(0,500).trim();
     startAnalysis();
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='product-description'){
+    const value=String(e.target.value||'').slice(0,500);
+    if(value!==e.target.value)e.target.value=value;
+    state.manual=value;
+    const count=$('#product-description-count');
+    if(count)count.textContent=`${value.length}/500`;
   }
 });
 document.addEventListener('change',e=>{
