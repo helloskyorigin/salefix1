@@ -56,6 +56,9 @@ test('Standard Webhooks raw-body signature, replay window and evidence checks',(
   assert.equal(sale.email,'buyer@example.com');
   assert.equal(sale.paymentId,'pay123');
   assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:490}},env.DODO_PRODUCT_ID),null);
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:4901}},env.DODO_PRODUCT_ID),null);
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:5400,tax:500}},env.DODO_PRODUCT_ID)?.paymentId,'pay123');
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:5400,tax:200}},env.DODO_PRODUCT_ID),null);
   assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,product_cart:[{product_id:'different',quantity:1}]}},env.DODO_PRODUCT_ID),null);
   assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,status:'failed'}},env.DODO_PRODUCT_ID),null);
   assert.throws(()=>verifyDodoWebhook({headers,rawBody:body+' ',secret:env.DODO_PAYMENTS_WEBHOOK_KEY,now:Number(timestamp)}),/signature/);
