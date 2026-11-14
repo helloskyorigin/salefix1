@@ -89,7 +89,7 @@ return `${header()}
       <div class="lf-feature"><span class="lf-feature-icon purple">${icon('bolt',25)}</span><div><strong>Product Content Audit</strong><small>Find what to fix</small></div></div>
       <div class="lf-feature"><span class="lf-feature-icon blue">${icon('layers',25)}</span><div><strong>Sales Page Builder</strong><small>A clearer sales page</small></div></div>
       <div class="lf-feature"><span class="lf-feature-icon purple">${icon('megaphone',25)}</span><div><strong>Marketing Kit</strong><small>Posts, graphics &amp; replies</small></div></div>
-      <div class="lf-feature"><span class="lf-feature-icon blue">${icon('link',25)}</span><div><strong>One-Click Publish</strong><small>Planned for paid launch</small></div></div>
+      <div class="lf-feature"><span class="lf-feature-icon blue">${icon('link',25)}</span><div><strong>One-Click Publish</strong><small>For verified paid buyers</small></div></div>
     </div>
   </section>
 
@@ -122,7 +122,7 @@ return `${header()}
       <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('link',22)}</span><span class="lf-step-index">01</span></div><h3>Add files or a link</h3><p>Upload your ebook, guide or template—or paste its public selling-page URL.</p><span class="lf-step-foot">Gumroad · Payhip · Your website</span></article>
       <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon violet">${icon('scan',22)}</span><span class="lf-step-index">02</span></div><h3>We review available content</h3><p>SaleFix inspects readable file contents or public sales-page text for concrete improvements.</p><span class="lf-step-foot">Based on available content</span></article>
       <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon green">${icon('eye',22)}</span><span class="lf-step-index">03</span></div><h3>Get a free action plan</h3><p>See up to three findings, why they matter, and a suggested headline with a before-and-after view.</p><span class="lf-step-foot">Real findings · No fake scores</span></article>
-      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('layers',22)}</span><span class="lf-step-index">04</span></div><h3>Go further with the full kit</h3><p>The planned $49 kit brings together editable sales copy, marketing posts, graphics and buyer replies.</p><span class="lf-step-foot">Paid checkout coming later</span></article>
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('layers',22)}</span><span class="lf-step-index">04</span></div><h3>Go further with the full kit</h3><p>The $49 kit brings together editable sales copy, marketing posts, graphics and buyer replies.</p><span class="lf-step-foot">Available when secure checkout is enabled</span></article>
     </div>
     <div class="lf-explain-note surface"><span class="lf-note-icon">${icon('shield',20)}</span><p><strong>What if a site blocks scanning?</strong> Upload the product files instead. Your report shows what SaleFix could actually inspect.</p><a href="#/analyze">Try free analysis ${icon('arrow',17)}</a></div>
   </section>
@@ -138,9 +138,9 @@ return `${header()}
 
   <section class="container lf-publish-section">
     <div class="lf-publish surface">
-      <div class="lf-publish-copy"><span class="pill softblue">Planned feature</span><h2>One-Click Publish</h2><p>We are building shareable hosted sales pages for a future release.</p>
+      <div class="lf-publish-copy"><span class="pill softblue">Paid feature</span><h2>One-Click Publish</h2><p>Verified buyers can publish a shareable sales page that points to their own real product checkout.</p>
         <div class="lf-publish-bullets"><span>${icon('checkcircle',16)} AI-built sales page</span><span>${icon('checkcircle',16)} Publish with a live link</span><span>${icon('checkcircle',16)} Works with your existing checkout</span></div>
-        <small>This feature is not available in the current free release.</small>
+        <small>Requires verified purchase access and secure service configuration.</small>
       </div>
       <div class="lf-publish-browser"><div class="lf-browser-address"><span class="lf-window-dots"><i></i><i></i><i></i></span><span>${icon('link',14)} salefix.app/p/your-product</span></div><div class="lf-publish-preview"><div><strong>Your Product</strong><i></i><i></i><i></i></div><span>${icon('spark',34)}</span></div></div>
     </div>
@@ -149,14 +149,14 @@ return `${header()}
   <section class="container lf-bottom" aria-label="Pricing and common questions">
     <article class="surface lf-price" id="pricing">
       <div class="lf-price-amount"><span class="pill lightviolet">♛ Complete Sales Kit</span><strong>$49</strong><small>One-time payment</small></div>
-      <div class="lf-price-list"><span>${icon('checkcircle',16)} Full AI sales audit &amp; recommendations</span><span>${icon('checkcircle',16)} Improved, ready-to-use sales page</span><span>${icon('checkcircle',16)} 10 promotional posts</span><span>${icon('checkcircle',16)} 3 branded graphics concepts</span><span>${icon('checkcircle',16)} Buyer reply templates</span><span>${icon('checkcircle',16)} Hosted publishing (planned)</span></div>
-      <div class="lf-price-action"><a href="#/analyze" class="button button-primary">Analyze for Free ${icon('arrow',17)}</a><span>Planned paid kit: $49 · Checkout currently unavailable</span></div>
+      <div class="lf-price-list"><span>${icon('checkcircle',16)} Detailed content audit &amp; recommendations</span><span>${icon('checkcircle',16)} Improved, ready-to-use sales page</span><span>${icon('checkcircle',16)} 10 promotional posts</span><span>${icon('checkcircle',16)} 3 branded graphics concepts</span><span>${icon('checkcircle',16)} Buyer reply templates</span><span>${icon('checkcircle',16)} Hosted publishing for verified buyers</span></div>
+      <div class="lf-price-action"><a href="#/analyze" class="button button-primary">Analyze for Free ${icon('arrow',17)}</a><span>$49 one-time · Checkout availability checked at payment step</span></div>
     </article>
     <article class="surface lf-faq" id="faq"><h2>Frequently Asked Questions</h2>
       ${faqItem(0,'Which platforms does it work with?','SaleFix reviews supported product files and publicly readable sales pages, including many Gumroad, Payhip and independent sites. If a page cannot be read, upload your files instead.')}
       ${faqItem(1,'Do I need to sign up?','No login is required for the free audit. Paid publishing will use secure passwordless access after launch.')}
       ${faqItem(2,'How will I get access after payment?','Once checkout is available, paid customers will receive a secure email link to their kit. Payments are disabled until delivery is ready.')}
-      ${faqItem(3,'Can I use it for multiple products?','The planned $49 purchase covers one product campaign kit. You can run a new free audit for another product.')}
+      ${faqItem(3,'Can I use it for multiple products?','A $49 purchase covers one product campaign kit. You can run a new free audit for another product.')}
       ${faqItem(4,'What if SaleFix cannot read my page?','If a site blocks automated access, upload your product files instead. Results will describe what could actually be inspected.')}
       ${faqItem(5,'Does a good audit mean I will make more sales?','No. The audit checks the clarity of visible product copy and provides improvement ideas. It cannot predict or verify future sales.')}
     </article>
