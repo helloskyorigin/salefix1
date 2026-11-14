@@ -25,3 +25,30 @@ jobs:
           for f in api/*.js lib/*.js; do node --check "$f"; done
       - name: Unit and integration tests
         run: npm test
+
+  browser-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned browser automation
+        run: |
+          npm install --no-save --ignore-scripts playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Launch SaleFix test server
+        run: |
+          node local-server.js > /tmp/salefix-test-server.log 2>&1 &
+          for i in {1..25}; do
+            if curl --fail --silent http://127.0.0.1:3000/api/health > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/salefix-test-server.log
+          exit 1
+      - name: Real desktop and mobile browser journey
+        run: node tests/browser-e2e.mjs
+      - name: Print local server errors on failure
+        if: failure()
+        run: cat /tmp/salefix-test-server.log || true
