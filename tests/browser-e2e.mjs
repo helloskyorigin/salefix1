@@ -1,11 +1,12 @@
 // Real browser regression for the free user journey. Runs in GitHub Actions.
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import {chromium} from 'playwright';
 const base=process.env.BASE_URL||'http://127.0.0.1:3000';
 const browser=await chromium.launch({headless:true});
 const errors=[];
 async function visitAndAudit(viewport){
-  const ctx=await browser.newContext({viewport});
+  const ctx=await browser.newContext({viewport,acceptDownloads:true});
   const page=await ctx.newPage();
   page.on('pageerror',e=>errors.push(e.message));
   try{
@@ -28,9 +29,34 @@ async function visitAndAudit(viewport){
     assert.match(await page.locator('#selected-product-files').textContent(),/CreatorLaunchKit\.txt/);
     await page.locator('#analyze-form button[type="submit"]').click();
     await page.waitForURL('**/#/results',{timeout:18000});
+    await page.locator('#rv-report').waitFor({state:'visible'});
     assert.match(await page.locator('body').textContent(),/Product audit — key findings/);
     assert.match(await page.locator('body').textContent(),/CreatorLaunchKit/);
+    assert.match(await page.locator('.rv-snapshot').textContent(),/Actionable/);
+    assert.match(await page.locator('.rv-coverage').textContent(),/From your uploaded product files/);
     assert.equal(await page.locator('#unlock-button').count(),1);
+    const issues=await page.locator('[data-rv-reviewed]').count();
+    assert.ok(issues>=1,'At least one grounded recommendation for uploaded source');
+    assert.equal(await page.locator('[data-rv-reviewed-count]').textContent(),'0 of '+issues);
+    await page.locator('[data-rv-jump="rv-findings"]').click();
+    await page.locator('[data-rv-reviewed="0"]').check();
+    assert.equal(await page.locator('[data-rv-reviewed-count]').textContent(),'1 of '+issues);
+    const reviewOverflow=await page.evaluate(()=>({scroll:document.documentElement.scrollWidth,client:document.documentElement.clientWidth}));
+    assert.ok(reviewOverflow.scroll<=reviewOverflow.client+2,'Results horizontal overflow '+JSON.stringify(reviewOverflow));
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.locator('#rv-report').waitFor({state:'visible'});
+    assert.equal(await page.locator('[data-rv-reviewed="0"]').isChecked(),true);
+    await page.locator('[data-rv-copy-fix="0"]').click();
+    assert.match(await page.locator('#rv-fix-feedback-0').textContent(),/Copied!|Could not copy/);
+    const downloadReady=page.waitForEvent('download');
+    await page.locator('[data-rv-download]').first().click();
+    const downloaded=await downloadReady;
+    assert.match(downloaded.suggestedFilename(),/^SaleFix-.*-audit\.txt$/);
+    const reportText=await readFile(await downloaded.path(),'utf8');
+    assert.match(reportText,/SALEFIX — FREE PRODUCT AUDIT/);
+    assert.match(reportText,/ACTIONABLE FINDINGS/);
+    assert.match(reportText,/CreatorLaunchKit/);
+    assert.match(reportText,/CONTENT|FILE LIMITATIONS|IMPORTANT LIMITATIONS/);
     await page.locator('#unlock-button').click();
     await page.waitForURL('**/#/checkout');
     assert.match(await page.locator('body').textContent(),/29\.00/);
@@ -48,7 +74,7 @@ async function visitAndAudit(viewport){
   }finally{await ctx.close()}
 }
 try{
-  for(const viewport of [{width:1366,height:900},{width:390,height:844}]){
+  for(const viewport of [{width:1366,height:900},{width:768,height:1024},{width:390,height:844},{width:320,height:740}]){
     const result=await visitAndAudit(viewport);
     console.log('Browser E2E PASSED',result);
   }
