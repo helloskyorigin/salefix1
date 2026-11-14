@@ -16,7 +16,7 @@ test('policy copy accurately describes checkout and data storage',()=>{
   assert.match(legalContent('privacy'),/Upstash Redis/);
   assert.match(legalContent('privacy'),/Resend/);
   assert.match(legalContent('privacy'),/original uploaded binaries/);
-  assert.match(legalContent('terms'),/US\$49/);
+  assert.match(legalContent('terms'),/US\$29/);
   assert.match(legalContent('privacy'),/sessionStorage/);
 });
 test('app has legal links and no fabricated sales-readiness score',async()=>{
