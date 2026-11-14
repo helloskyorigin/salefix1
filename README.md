@@ -4,7 +4,7 @@ A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix
 
 ## Current implementation
 
-- Fully responsive landing page, **two-choice audit form (file upload OR product URL; either one is enough)**, real loading state, personalized free report, before/after headline and $49 checkout preview. No repeated URL field and no extra audience, benefit, title or description questions.
+- Fully responsive landing page, **two-choice audit form (file upload OR product URL; either one is enough)**, real loading state, personalized free report, before/after headline and $49 checkout preview. No repeated URL field, optional 500-character product description with live counter, and no extra audience, benefit or product-name questions.
 - Real server-side retrieval of publicly readable HTML, up to three specific content observations and source-backed headline advice.
 - Optional Gemini API integration for headline suggestions and, only when explicitly enabled, content suggestions grounded in exact quotes from uploaded files. Deterministic, evidence-based fallbacks work without a key.
 - Public URL protections: HTTP(S) only, nonstandard ports blocked, private IPs/hostnames blocked, redirects rechecked, DNS pinned to resolved public IP, request timeout and response size limit.
@@ -30,22 +30,26 @@ Open http://localhost:3000 . To enable AI-assisted headlines, set `GEMINI_API_KE
 4. Optional: add `GEMINI_API_KEY` as a server-side environment variable. Do **not** prefix it with `NEXT_PUBLIC_`.
 5. Test a public product URL and upload-only PDF/ZIP flow on a real mobile browser before promoting the link. GitHub Actions runs `npm test` and a separate public-production smoke check. If the smoke check returns `302` to `vercel.com/sso-api`, the project is protected by Vercel Authentication and must be made publicly accessible in Vercel's deployment-protection settings.
 
-## IMPORTANT: Before paid launch
+## Production activation & security
 
-**Payment is intentionally OFF.** Do not replace it with a direct payment link without implementing verified entitlement and delivery. The finished paid product must include:
+**Payment remains OFF by default.** The application now contains guarded Dodo checkout, HMAC-signed webhook verification, durable purchase records, email delivery, passwordless reissue, refund revocation and buyer-authorized hosting. None of these can take real payments without all of the following steps:
 
-- Dodo Payments (or another approved provider) checkout at $49, receipt, and server-side webhook signature/payment verification.
-- Buyer ownership and passwordless edit-access, stored using a real database/KV service.
-- A paid kit generator, branded asset exports and a publish endpoint. Never unlock from query parameters or a client-side success message alone.
-- A real live sales-page URL for each paid product, with buyer-controlled existing checkout link. No analytics are promised.
-- Payment, failed-payment, fulfilled-delivery, refunds, rate-limit and replay tests.
-- Accurate Terms/Privacy/Refund details, verified support email, and merchant age/KYC eligibility.
+1. Make the Vercel **production domain public** under Project Settings → Deployment Protection. A 302 to `vercel.com/sso-api` means the deployment is still protected; this cannot be fixed in GitHub source.
+2. Connect **Upstash Redis** through the Vercel Marketplace and redeploy. Add `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. This is required for production free audits and all paid operations.
+3. Obtain an approved **Dodo Payments merchant account**. The configured `DODO_PRODUCT_ID` must be a genuine one-time **USD $49** product with no discounts. Merchant identity, banking and age eligibility must comply with provider rules. Never use someone else's identity to bypass verification.
+4. In **test_mode**, configure `DODO_PAYMENTS_API_KEY`, `DODO_PAYMENTS_WEBHOOK_KEY`, `SALEFIX_PUBLIC_ORIGIN`, `SALEFIX_KIT_SECRET` (32+ random chars), `RESEND_API_KEY`, and `SALEFIX_DELIVERY_FROM` (a verified sender domain). Subscribe the Dodo webhook to `https://YOUR_DOMAIN/api/dodo-webhook` for payment success, refunds and dispute-related events.
+5. Verify a full **sandbox** purchase: correct USD amount, product ID, webhook delivery, email link, `/api/paid-kit`, link reissue, public-page publish and refund revocation. Test duplicate, tampered and out-of-order webhooks. Then explicitly opt in with `SALEFIX_PAYMENTS_ENABLED=true` and `DODO_PAYMENTS_ENVIRONMENT=live_mode` only after merchant approval and successful production review.
+6. Keep Gemini paid requests under control: `GEMINI_API_KEY` optional; `SALEFIX_ENABLE_FILE_AI=false` until cost budgets and monitoring are ready.
 
-The audit is intentionally open for internal tests, but **add durable per-IP/user rate limiting and abuse controls** before marketing broadly. Gemini API use is not included in consumer subscriptions and can have usage charges.
+**No login is required for the free audit.** Paid customers access their kit using a signed link emailed only after provider-verified payment. Signed links last 7 days; `#/recover` can issue a fresh link to the same purchase email. Website publishing requires an active paid record and a real external checkout URL. All public input is escaped; no fabricated proof, sales numbers or fake customer claims are generated.
+
+**Retention:** Pending orders expire within 90 days. Paid orders, link-reissue indexes and published pages are currently stored up to 365 days. Webhook replay IDs expire within 30 days. Do not promise permanent hosted pages without an explicit longevity plan.
+
+**Operator monitoring:** `/api/status` exposes non-sensitive readiness flags; `/api/health` checks that the function itself responds. GitHub Actions runs both Node tests and a separate public production HTTP smoke check. The paid checkout API returns 503 unless fully configured; no payment can be started while disabled.
 
 ## Product flow
 
-`Landing CTA → Two-choice form (files or URL) → Actual analysis → Free result → $49 preview (payment integration pending)`
+`Landing → Optional file/link + optional 500-character description → Free audit → $49 checkout (if configured) → Verified webhook → Email link → Paid kit → Optional hosted page`
 
 ## Brand / design
 
@@ -61,11 +65,11 @@ The audit is intentionally open for internal tests, but **add durable per-IP/use
 
 The `#/kit?access=<SIGNED_TOKEN>` route is a secure customer workspace, not a public preview. The frontend sends the token in the `Authorization` header to `/api/paid-kit`. That endpoint verifies a server-side HMAC signature and expiry using `SALEFIX_KIT_SECRET` (minimum 32 characters). Without configuration or a valid token, access is denied.
 
-The kit currently includes editable sales-page copy and downloadable HTML; 10 editable marketing posts; 3 SVG graphics; buyer replies; a 7-day plan; and a single ZIP export. Edits are saved only in that browser and are **not** synced across devices. Source text is reviewed with grounded, deterministic templates; there is no claim of revenue or proven conversions. One-click hosted publishing is not active.
+The kit currently includes editable sales-page copy and downloadable HTML; 10 editable marketing posts; 3 SVG graphics; buyer replies; a 7-day plan; and a single ZIP export. Edits are saved only in that browser and are **not** synced across devices. Source text is reviewed with grounded, deterministic templates; there is no claim of revenue or proven conversions. Verified buyers can publish a shareable page to `/p/<order-id>` after adding their existing checkout link; publishing requires a live, active paid record.
 
-**Payment integration is still missing.** `/api/checkout` remains disabled. Never issue tokens from a public endpoint or from client-supplied `verifiedProviderEvent` fields. Only invoke `issueKitAccess` server-side after checking a completed $49 USD payment via a **cryptographically verified provider webhook**, and email the resulting link to its purchaser. The signed link currently expires after 7 days; before charging customers, add a secure email reissue mechanism (and persistent purchase records) so they can regain access without logging in. The local server supports `/api/paid-kit` with the same access validation.
+**Payment code is integrated but NOT enabled.** `/api/checkout` creates a provider session only after all required server keys and the explicit launch flag are present. `/api/dodo-webhook` validates the exact signed raw body, payment status, product and price before emailing an access link. `/api/recover` issues a fresh link to verified buyers; `/api/publish` requires that buyer token and an active stored order. Real merchant and sandbox tests must still be completed before charging customers.
 
-For security, do not put actual payment tokens, private email addresses, or `SALEFIX_KIT_SECRET` in Git. The paid workspace cannot be used by customers until the payment verification, secure link delivery, reissue and support processes are connected and tested.
+For security, do not put actual payment tokens, private email addresses, or `SALEFIX_KIT_SECRET` in Git. Do not launch payment until merchant approval, Redis provisioning, email-domain verification, real sandbox checkout, refund and reissue tests are complete.
 
 
 ## Product-first file audit (free)
