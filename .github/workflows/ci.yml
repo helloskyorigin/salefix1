@@ -19,8 +19,9 @@ jobs:
       - name: Syntax checks
         run: |
           node --check app.js
+          node --check kit-dashboard.js
           node --check product-extractor.js
-          node --check lib/audit.js
-          node --check lib/file-audit.js
+          node --check local-server.js
+          for f in api/*.js lib/*.js; do node --check "$f"; done
       - name: Unit and integration tests
         run: npm test
