@@ -4,6 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {analyzeProduct} from './lib/audit.js';
 import paidKitHandler from './api/paid-kit.js';
+import healthHandler from './api/health.js';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.png':'image/png','.ico':'image/x-icon'};
 const server=http.createServer(async(req,res)=>{
@@ -13,6 +14,11 @@ const server=http.createServer(async(req,res)=>{
     for await(const chunk of req){length+=chunk.length;if(length>90000){res.writeHead(413);res.end('Too large');return}chunks.push(chunk)}
     try{const result=await analyzeProduct(JSON.parse(Buffer.concat(chunks).toString('utf8')));res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(result))}
     catch(e){res.writeHead(400,{'Content-Type':'application/json'});res.end(JSON.stringify({error:String(e.message)}))};return;
+  }
+  if(req.url?.split('?')[0]==='/api/health'){
+    const headers={};let code=200;
+    const adapter={setHeader(name,value){headers[name]=value;return this},status(value){code=value;return this},json(payload){res.writeHead(code,{'Content-Type':'application/json; charset=utf-8',...headers});res.end(req.method==='HEAD'?'':JSON.stringify(payload));return this}};
+    return healthHandler(req,adapter);
   }
   if(req.url?.split('?')[0]==='/api/paid-kit'){
     const headers={};let code=200;
