@@ -56,7 +56,7 @@ return `${header()}
 <main class="landing-page">
   <section class="container lf-hero" aria-labelledby="landing-title">
     <div class="lf-hero-copy">
-      <span class="pill softblue lf-kicker">${icon('spark',15)} AI-Powered Sales Optimization</span>
+      <span class="pill softblue lf-kicker">${icon('spark',15)} Digital Product Audit</span>
       <h1 id="landing-title">Turn your product into a <span>better-selling</span> offer.</h1>
       <p>Check what's inside your digital product — PDFs, ZIP toolkits, templates and more. Get actionable improvements for the product itself and how you sell it.</p>
       <a class="button button-primary lf-hero-start" href="#/analyze">Analyze My Product ${icon('arrow',18)}</a>
@@ -86,7 +86,7 @@ return `${header()}
 
   <section class="container lf-features" id="features" aria-label="SaleFix features">
     <div class="lf-feature-strip surface">
-      <div class="lf-feature"><span class="lf-feature-icon purple">${icon('bolt',25)}</span><div><strong>AI Sales Audit</strong><small>Find what to fix</small></div></div>
+      <div class="lf-feature"><span class="lf-feature-icon purple">${icon('bolt',25)}</span><div><strong>Product Content Audit</strong><small>Find what to fix</small></div></div>
       <div class="lf-feature"><span class="lf-feature-icon blue">${icon('layers',25)}</span><div><strong>Sales Page Builder</strong><small>A clearer sales page</small></div></div>
       <div class="lf-feature"><span class="lf-feature-icon purple">${icon('megaphone',25)}</span><div><strong>Marketing Kit</strong><small>Posts, graphics &amp; replies</small></div></div>
       <div class="lf-feature"><span class="lf-feature-icon blue">${icon('link',25)}</span><div><strong>One-Click Publish</strong><small>Planned for paid launch</small></div></div>
@@ -116,15 +116,15 @@ return `${header()}
   <section class="container lf-explain" id="how" aria-labelledby="lf-explain-title">
     <div class="lf-explain-heading">
       <div><span class="lf-detail-kicker">${icon('spark',15)} THE PROCESS</span><h2 id="lf-explain-title">How does <span>SaleFix</span> work?</h2></div>
-      <p>A simple path from your current product link to clear, specific improvements. Start for free—no signup or card needed.</p>
+      <p>A simple path from your product files or sales-page link to useful improvements. Start free—no signup or card needed.</p>
     </div>
     <div class="lf-explain-grid">
-      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('link',22)}</span><span class="lf-step-index">01</span></div><h3>Share your product link</h3><p>Paste the public page for your ebook, guide, template, course or other digital product.</p><span class="lf-step-foot">Gumroad · Payhip · Your website</span></article>
-      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon violet">${icon('scan',22)}</span><span class="lf-step-index">02</span></div><h3>We review your offer</h3><p>SaleFix reads the accessible page text to look for unclear headlines, missing benefits and confusing purchase actions.</p><span class="lf-step-foot">Based on available content</span></article>
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('link',22)}</span><span class="lf-step-index">01</span></div><h3>Add files or a link</h3><p>Upload your ebook, guide or template—or paste its public selling-page URL.</p><span class="lf-step-foot">Gumroad · Payhip · Your website</span></article>
+      <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon violet">${icon('scan',22)}</span><span class="lf-step-index">02</span></div><h3>We review available content</h3><p>SaleFix inspects readable file contents or public sales-page text for concrete improvements.</p><span class="lf-step-foot">Based on available content</span></article>
       <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon green">${icon('eye',22)}</span><span class="lf-step-index">03</span></div><h3>Get a free action plan</h3><p>See up to three findings, why they matter, and a suggested headline with a before-and-after view.</p><span class="lf-step-foot">Real findings · No fake scores</span></article>
       <article class="surface lf-explain-step"><div class="lf-step-top"><span class="lf-detail-icon blue">${icon('layers',22)}</span><span class="lf-step-index">04</span></div><h3>Go further with the full kit</h3><p>The planned $49 kit brings together editable sales copy, marketing posts, graphics and buyer replies.</p><span class="lf-step-foot">Paid checkout coming later</span></article>
     </div>
-    <div class="lf-explain-note surface"><span class="lf-note-icon">${icon('shield',20)}</span><p><strong>What if a site blocks scanning?</strong> You can add your actual product description manually. The report will tell you which information it used.</p><a href="#/analyze">Try free analysis ${icon('arrow',17)}</a></div>
+    <div class="lf-explain-note surface"><span class="lf-note-icon">${icon('shield',20)}</span><p><strong>What if a site blocks scanning?</strong> Upload the product files instead. Your report shows what SaleFix could actually inspect.</p><a href="#/analyze">Try free analysis ${icon('arrow',17)}</a></div>
   </section>
 
   <section class="container lf-inside" aria-labelledby="lf-inside-title">
@@ -153,11 +153,11 @@ return `${header()}
       <div class="lf-price-action"><a href="#/analyze" class="button button-primary">Analyze for Free ${icon('arrow',17)}</a><span>Planned paid kit: $49 · Checkout currently unavailable</span></div>
     </article>
     <article class="surface lf-faq" id="faq"><h2>Frequently Asked Questions</h2>
-      ${faqItem(0,'Which platforms does it work with?','SaleFix can analyze many publicly readable digital-product pages, including Gumroad, Payhip and independent websites. You can paste product details manually if crawling is blocked.')}
+      ${faqItem(0,'Which platforms does it work with?','SaleFix reviews supported product files and publicly readable sales pages, including many Gumroad, Payhip and independent sites. If a page cannot be read, upload your files instead.')}
       ${faqItem(1,'Do I need to sign up?','No login is required for the free audit. Paid publishing will use secure passwordless access after launch.')}
       ${faqItem(2,'How will I get access after payment?','Once checkout is available, paid customers will receive a secure email link to their kit. Payments are disabled until delivery is ready.')}
       ${faqItem(3,'Can I use it for multiple products?','The planned $49 purchase covers one product campaign kit. You can run a new free audit for another product.')}
-      ${faqItem(4,'What if SaleFix cannot read my page?','If a page blocks automated access, use the manual product-description field. Results will be based on the real text you supply.')}
+      ${faqItem(4,'What if SaleFix cannot read my page?','If a site blocks automated access, upload your product files instead. Results will describe what could actually be inspected.')}
       ${faqItem(5,'Does a good audit mean I will make more sales?','No. The audit checks the clarity of visible product copy and provides improvement ideas. It cannot predict or verify future sales.')}
     </article>
   </section>
@@ -194,11 +194,11 @@ function loading(){const domain=(()=>{try{return state.url?new URL(state.url).ho
 <div class="scan-panel-header"><span class="scan-brand">${icon('spark',24)} <strong>SaleFix AI</strong></span><span class="scan-live-status"><i></i> Analyzing…</span></div>
 <div class="scan-art" aria-hidden="true"><div class="scan-art-halo"></div><div class="scan-art-frame"><i class="scan-art-corner top-left"></i><i class="scan-art-corner top-right"></i><i class="scan-art-corner bottom-left"></i><i class="scan-art-corner bottom-right"></i></div><div class="scan-art-page"><div class="scan-art-browser"><i></i><i></i><i></i></div><div class="scan-art-content"><span class="scan-art-thumbnail"><i></i><i></i></span><span class="scan-art-rows"><i></i><i></i><i></i></span></div><div class="scan-art-bottom"><i></i><i></i></div></div><div class="scan-art-beam"></div></div>
 <div class="scan-copy"><h1>Analyzing your product<span>...</span></h1><p>Inspecting your product materials and preparing evidence-based improvements.</p></div>
-<div class="scan-checklist" role="status" aria-live="polite" aria-label="Analysis in progress"><div class="scan-checklist-row is-working"><span class="scan-row-spinner" aria-hidden="true"></span><span>Reviewing your product content</span><span class="scan-row-tag">In progress</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Understanding your target audience</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Checking your sales messaging</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Preparing personalized recommendations</span></div></div>
+<div class="scan-checklist" role="status" aria-live="polite" aria-label="Analysis in progress"><div class="scan-checklist-row is-working"><span class="scan-row-spinner" aria-hidden="true"></span><span>Reviewing your product content</span><span class="scan-row-tag">In progress</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Checking the available product details</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Checking your sales messaging</span></div><div class="scan-checklist-row"><span class="scan-row-unstarted" aria-hidden="true"></span><span>Preparing personalized recommendations</span></div></div>
 <p class="scan-notice">${icon('bolt',18)}  <span id="scan-notice-text">Your report will open automatically when the analysis is complete.</span></p><button id="cancel-analysis" type="button" class="scan-cancel-button">Cancel &amp; edit details</button>
 </section>
 <aside class="scan-side" aria-label="What SaleFix is reviewing"><div class="surface scan-product-card"><span class="scan-small-page" aria-hidden="true"><i></i><b></b><em></em></span><span class="scan-product-copy"><strong>Your Product</strong><small>Reviewing <b>${safe(domain)}</b> and any details you provided</small></span></div>
-<div class="surface scan-criteria-card"><div class="scan-criteria-item"><span class="scan-criteria-icon lavender">${icon('scan',25)}</span><span><strong>Offer Analysis</strong><small>Is your product offer clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon sky">${icon('person',25)}</span><span><strong>Audience Fit</strong><small>Does the message fit your audience?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon indigo">${icon('chart',25)}</span><span><strong>Conversion Check</strong><small>Is the buying action clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon violet">${icon('spark',25)}</span><span><strong>Improvement Ideas</strong><small>Practical fixes based on your content.</small></span></div></div></aside></div></main>${footer()}`}
+<div class="surface scan-criteria-card"><div class="scan-criteria-item"><span class="scan-criteria-icon lavender">${icon('scan',25)}</span><span><strong>Offer Analysis</strong><small>Is your product offer clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon sky">${icon('person',25)}</span><span><strong>Product clarity</strong><small>Are the contents easy to understand?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon indigo">${icon('chart',25)}</span><span><strong>Conversion Check</strong><small>Is the buying action clear?</small></span></div><div class="scan-criteria-item"><span class="scan-criteria-icon violet">${icon('spark',25)}</span><span><strong>Improvement Ideas</strong><small>Practical fixes based on your content.</small></span></div></div></aside></div></main>${footer()}`}
 function showResult(){
   const r=state.results;
   if(!r || !r.product || !Array.isArray(r.issues))return `${header(true)}<main class="container empty-state surface" role="status"><h1>No audit available</h1><p>Upload your product file or paste a sales-page link to begin.</p><a class="button button-primary" href="#/analyze">Analyze a product ${icon('arrow',18)}</a></main>${footer()}`;
@@ -267,7 +267,7 @@ async function startAnalysis(){
   const slowNotice=setTimeout(()=>{
     if(state.analyzing&&activeAnalysisController===controller&&routeFromHash()==='loading'){
       const notice=document.getElementById('scan-notice-text');
-      if(notice)notice.textContent='This product page is taking longer than usual. You can stay here or cancel and edit your details.';
+      if(notice)notice.textContent='This product is taking longer than usual. You can continue or cancel and try a file instead.';
     }
   },12000);
   const requestDeadline=setTimeout(()=>{timedOut=true;controller.abort();},40000);
