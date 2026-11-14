@@ -11,6 +11,8 @@ A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix
 - When a website blocks crawling, the two-choice form suggests uploading product files instead. Backend retains legacy manual-copy support for integrations but the public form no longer exposes that extra field.
 - One-time $29 pricing, no login required for free audit.
 - **NO fake testimonials, sales figures, readiness percentages, or fake progress.**
+- **Evidence-first Results Workspace v3:** real-source product snapshot, deduplicated actionable findings (observation → fix), per-report reviewed checklist saved only in the browser session, one-click fix/headline copying, readable before/after comparison, transparent file and URL coverage, downloadable plain-text report, and an optional $29 Sales Kit panel. No invented sales score or proof.
+- **Browser-tested responsiveness:** desktop 1366px, tablet 768px, phone 390px, narrow phone 320px. Real Chromium tests include free upload → audit → results, checklist persistence, clipboard action, report download, legal navigation and closed checkout.
 
 ## Local setup
 
