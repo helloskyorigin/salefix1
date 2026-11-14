@@ -4,6 +4,15 @@ import '../vendor/jszip.min.js';
 import {extractProductFiles} from '../product-extractor.js';
 import {reviewProductFiles} from '../lib/file-audit.js';
 
+// Node has no DOMParser; supply only the minimal parsing surface needed by these
+// fixtures. Browsers use their native DOMParser in production.
+globalThis.DOMParser ??= class {
+  parseFromString(source,mode){
+    if(mode==='text/html')return {body:{textContent:source.replace(/<[^>]+>/g,' ')},querySelectorAll(){return [];}};
+    const tags=(tag)=>[...source.matchAll(new RegExp('<'+tag+'(?:\\s[^>]*)?>([\\s\\S]*?)<\\/'+tag+'>','gi'))].map(m=>({textContent:m[1]}));
+    return {querySelector(){return null},getElementsByTagName:tags,getElementsByTagNameNS(_ns,name){return tags(name)}};
+  }
+};
 const makeFile=(name,bytes)=>({name,size:bytes.length,arrayBuffer:async()=>bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength)});
 async function archive(name,entries){
   assert.equal(typeof globalThis.JSZip,'function','Bundled JSZip must load locally, without a CDN');
