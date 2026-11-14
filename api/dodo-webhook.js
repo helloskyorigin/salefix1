@@ -5,10 +5,10 @@ import {issueKitAccess} from '../lib/paid-kit.js';
 // Preserve the exact raw payload for Standard Webhooks HMAC verification.
 // No JSON reserialization is used, and no browser redirect can grant access.
 export const config={api:{bodyParser:false}};
-async function rawBody(req,max=250000){
+export async function rawBody(req,max=250000){
+  // Do NOT touch req.body: Vercel's lazy JSON getter consumes the stream.
   if(Buffer.isBuffer(req.rawBody))return req.rawBody.toString('utf8');
-  if(typeof req.body==='string')return req.body;
-  if(req.body!==undefined&&req.body!==null)throw Error('Raw webhook body unavailable.');
+  if(typeof req.rawBody==='string')return req.rawBody;
   const chunks=[];let length=0;
   for await(const chunk of req){length+=chunk.length;if(length>max)throw Error('Webhook too large.');chunks.push(chunk)}
   return Buffer.concat(chunks).toString('utf8');
