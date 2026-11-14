@@ -11,7 +11,7 @@ import publishHandler from '../api/publish.js';
 
 const env={
   VERCEL:'1',SALEFIX_PAYMENTS_ENABLED:'true',DODO_PAYMENTS_ENVIRONMENT:'test_mode',DODO_PAYMENTS_API_KEY:'test-secret',
-  DODO_PRODUCT_ID:'pdt_49_usd',DODO_PAYMENTS_WEBHOOK_KEY:'whsec_'+Buffer.alloc(32,3).toString('base64'),
+  DODO_PRODUCT_ID:'pdt_29_usd',DODO_PAYMENTS_WEBHOOK_KEY:'whsec_'+Buffer.alloc(32,3).toString('base64'),
   SALEFIX_KIT_SECRET:'s'.repeat(48),SALEFIX_PUBLIC_ORIGIN:'https://sale.example',
   RESEND_API_KEY:'test-resend',SALEFIX_DELIVERY_FROM:'SaleFix <support@example.com>',
   UPSTASH_REDIS_REST_URL:'https://example.upstash.io',UPSTASH_REDIS_REST_TOKEN:'test-redis'
@@ -36,7 +36,7 @@ test('Dodo session is server-priced and accepts no arbitrary browser-supplied am
   const session=await createDodoSession({orderId:'11111111-2222-4333-8444-555555555555',env,fetchImpl:fake});
   assert.match(session.checkoutUrl,/checkout.dodopayments.com/);
   assert.equal(calls[0].url,'https://test.dodopayments.com/checkouts');
-  assert.deepEqual(calls[0].body.product_cart,[{product_id:'pdt_49_usd',quantity:1}]);
+  assert.deepEqual(calls[0].body.product_cart,[{product_id:'pdt_29_usd',quantity:1}]);
   assert.equal(calls[0].body.metadata.salefix_order,'11111111-2222-4333-8444-555555555555');
   assert.equal(calls[0].body.billing_currency,'USD');
   assert.ok(!JSON.stringify(calls[0].body).includes('user_requested_price'));
@@ -49,9 +49,9 @@ test('Dodo session is server-priced and accepts no arbitrary browser-supplied am
 });
 test('Standard Webhooks raw-body signature, replay window and evidence checks',()=>{
   const body=JSON.stringify({type:'payment.succeeded',data:{
-    status:'succeeded',currency:'USD',total_amount:4900,
+    status:'succeeded',currency:'USD',total_amount:2900,
     payment_id:'pay123',metadata:{salefix_order:'11111111-2222-4333-8444-555555555555'},
-    product_cart:[{product_id:'pdt_49_usd',quantity:1}],customer:{email:'buyer@example.com'}}});
+    product_cart:[{product_id:'pdt_29_usd',quantity:1}],customer:{email:'buyer@example.com'}}});
   const id='msg_evt_12345',timestamp='1794649000',key=Buffer.alloc(32,3);
   const signature='v1,'+crypto.createHmac('sha256',key).update(id+'.'+timestamp+'.'+body).digest('base64');
   const headers={'webhook-id':id,'webhook-timestamp':timestamp,'webhook-signature':signature};
@@ -60,10 +60,10 @@ test('Standard Webhooks raw-body signature, replay window and evidence checks',(
   const sale=verifiedSale(verified.event,env.DODO_PRODUCT_ID);
   assert.equal(sale.email,'buyer@example.com');
   assert.equal(sale.paymentId,'pay123');
-  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:490}},env.DODO_PRODUCT_ID),null);
-  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:4901}},env.DODO_PRODUCT_ID),null);
-  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:5400,tax:500}},env.DODO_PRODUCT_ID)?.paymentId,'pay123');
-  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:5400,tax:200}},env.DODO_PRODUCT_ID),null);
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:290}},env.DODO_PRODUCT_ID),null);
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:2901}},env.DODO_PRODUCT_ID),null);
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:3400,tax:500}},env.DODO_PRODUCT_ID)?.paymentId,'pay123');
+  assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,total_amount:3400,tax:200}},env.DODO_PRODUCT_ID),null);
   assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,product_cart:[{product_id:'different',quantity:1}]}},env.DODO_PRODUCT_ID),null);
   assert.equal(verifiedSale({...verified.event,data:{...verified.event.data,status:'failed'}},env.DODO_PRODUCT_ID),null);
   assert.throws(()=>verifyDodoWebhook({headers,rawBody:body+' ',secret:env.DODO_PAYMENTS_WEBHOOK_KEY,now:Number(timestamp)}),/signature/);
