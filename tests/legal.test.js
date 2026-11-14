@@ -12,7 +12,10 @@ test('every public policy contains its correct title and business email',()=>{
   }
 });
 test('policy copy accurately describes checkout and data storage',()=>{
-  assert.match(legalContent('refunds'),/not (?:taking|accepting) paid orders yet/i);
+  assert.match(legalContent('refunds'),/checkout is only offered if secure merchant checkout/i);
+  assert.match(legalContent('privacy'),/Upstash Redis/);
+  assert.match(legalContent('privacy'),/Resend/);
+  assert.match(legalContent('privacy'),/original uploaded binaries/);
   assert.match(legalContent('terms'),/US\$49/);
   assert.match(legalContent('privacy'),/sessionStorage/);
 });
