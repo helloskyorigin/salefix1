@@ -36,24 +36,25 @@ test('bare domain fallback is normalized even if the public page cannot be fetch
   assert.match(result.note,/could not be fetched/);
 });
 
-test('UI accepts optional link and offers manual path',async()=>{
+test('landing starts one two-input form and blank input has clear validation',async()=>{
   const app={innerHTML:''},events={};
   globalThis.location={hash:'#/'};
   globalThis.window={scrollTo(){},addEventListener(name,fn){events[name]=fn;}};
-  globalThis.document={title:'',body:{dataset:{}},querySelector(s){if(s==='#app')return app;if(s==='#hero-url')return {value:'google.com'};if(s==='#manual-details')return {open:true};return null;},getElementById(){return null;},addEventListener(name,fn){events[name]=fn;}};
+  globalThis.document={title:'',body:{dataset:{}},querySelector(s){return s==='#app'?app:null;},getElementById(){return null;},addEventListener(name,fn){events[name]=fn;}};
   globalThis.sessionStorage={getItem(){return null},setItem(){},removeItem(){}};
   globalThis.FormData=class{constructor(form){this.values=form.values;}get(k){return this.values[k]}};
-  globalThis.fetch=async()=>({ok:false,json:async()=>({error:'Sample'})});
   await import('../app.js?optional-url-test');
-  assert.match(app.innerHTML,/Product link \(optional\)/);
-  assert.match(app.innerHTML,/id="manual-start"/);
-  events.submit({target:{id:'hero-form'},preventDefault(){}});
-  assert.equal(location.hash,'#/analyze');
-  assert.match(app.innerHTML,/Product link or domain/);
+  assert.match(app.innerHTML,/lf-hero-start/);
+  assert.match(app.innerHTML,/href="#\/analyze"/);
+  assert.doesNotMatch(app.innerHTML,/id="hero-form"|id="hero-url"/);
+  location.hash='#/analyze';events.hashchange();
+  assert.match(app.innerHTML,/Product page link/);
+  assert.match(app.innerHTML,/Upload product files/);
+  assert.equal((app.innerHTML.match(/<input/g)||[]).length,2);
   assert.doesNotMatch(app.innerHTML,/type="url" name="url" required/);
-  const values={url:'',audience:'Creators',benefit:'Better offers',manual:'',productName:'Sample'};
+  const values={url:''};
   events.submit({target:{id:'analyze-form',values},preventDefault(){}});
   assert.equal(location.hash,'#/analyze');
-  assert.match(app.innerHTML,/Without a link, paste at least 60 characters/);
-  assert.match(app.innerHTML,/id="manual-details" class="manual-details" open/);
+  assert.match(app.innerHTML,/Add a product file or paste a product link/);
+  assert.match(app.innerHTML,/role="alert"/);
 });
