@@ -32,5 +32,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/p/:slug",
+      "destination": "/api/public-page?slug=:slug"
+    }
   ]
 }
