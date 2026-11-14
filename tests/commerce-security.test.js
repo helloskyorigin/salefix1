@@ -10,7 +10,7 @@ import {Readable} from 'node:stream';
 import publishHandler from '../api/publish.js';
 
 const env={
-  VERCEL:'1',SALEFIX_PAYMENTS_ENABLED:'true',DODO_PAYMENTS_API_KEY:'test-secret',
+  VERCEL:'1',SALEFIX_PAYMENTS_ENABLED:'true',DODO_PAYMENTS_ENVIRONMENT:'test_mode',DODO_PAYMENTS_API_KEY:'test-secret',
   DODO_PRODUCT_ID:'pdt_49_usd',DODO_PAYMENTS_WEBHOOK_KEY:'whsec_'+Buffer.alloc(32,3).toString('base64'),
   SALEFIX_KIT_SECRET:'s'.repeat(48),SALEFIX_PUBLIC_ORIGIN:'https://sale.example',
   RESEND_API_KEY:'test-resend',SALEFIX_DELIVERY_FROM:'SaleFix <support@example.com>',
@@ -38,8 +38,13 @@ test('Dodo session is server-priced and accepts no arbitrary browser-supplied am
   assert.equal(calls[0].url,'https://test.dodopayments.com/checkouts');
   assert.deepEqual(calls[0].body.product_cart,[{product_id:'pdt_49_usd',quantity:1}]);
   assert.equal(calls[0].body.metadata.salefix_order,'11111111-2222-4333-8444-555555555555');
+  assert.equal(calls[0].body.billing_currency,'USD');
   assert.ok(!JSON.stringify(calls[0].body).includes('user_requested_price'));
   assert.equal(checkoutProduct({title:'Real Product',price:'$0',url:'https://seller.example/product'}).title,'Real Product');
+  assert.throws(()=>checkoutProduct({title:'Real Product',url:''}),/purchase link/);
+  assert.throws(()=>checkoutProduct({title:'Real Product',url:'http://127.0.0.1/private'}),/purchase link/);
+  assert.equal(commerceReady({...env,VERCEL_ENV:'production',DODO_PAYMENTS_ENVIRONMENT:'test_mode'}),false);
+  assert.equal(commerceReady({...env,VERCEL_ENV:'production',DODO_PAYMENTS_ENVIRONMENT:'live_mode'}),true);
   await assert.rejects(createDodoSession({orderId:'invalid',env,fetchImpl:fake}),/order reference/);
 });
 test('Standard Webhooks raw-body signature, replay window and evidence checks',()=>{
@@ -87,10 +92,14 @@ test('unconfigured money, webhook, and publish routes fail closed and never acce
     }
   }finally{if(prev===undefined)delete process.env.SALEFIX_PAYMENTS_ENABLED;else process.env.SALEFIX_PAYMENTS_ENABLED=prev}
 });
-test('production analysis rate limiting requires shared storage and atomic Redis',async()=>{
-  const missing=await enforceRateLimit({headers:{}},'audit',{env:{VERCEL:'1'}});
-  assert.equal(missing.allowed,false);
-  assert.equal(missing.status,503);
+test('free deterministic analysis works with per-instance limiter, paid AI requires Redis, and Redis quota is atomic',async()=>{
+  const missing=await enforceRateLimit({headers:{}},'audit',{env:{VERCEL:'1'},now:98765432100});
+  assert.equal(missing.allowed,true);
+  const aiMissing=await enforceRateLimit({headers:{}},'audit',{env:{VERCEL:'1',GEMINI_API_KEY:'test',SALEFIX_ENABLE_FILE_AI:'true'},now:98765432100});
+  assert.equal(aiMissing.allowed,false);
+  assert.equal(aiMissing.status,503);
+  const checkoutMissing=await enforceRateLimit({headers:{}},'checkout',{env:{VERCEL:'1'},now:98765432100});
+  assert.equal(checkoutMissing.status,503);
   const commands=[];
   const mock=async(cmd)=>{
     commands.push(cmd);
