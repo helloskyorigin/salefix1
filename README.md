@@ -4,11 +4,11 @@ A clean, iOS-inspired, no-signup product offer auditor with the approved SaleFix
 
 ## Current implementation
 
-- Fully responsive landing page, analyze form, actual loading state, personalized free report, before/after headline and $49 checkout screen.
+- Fully responsive landing page, **two-choice audit form (file upload OR product URL; either one is enough)**, real loading state, personalized free report, before/after headline and $49 checkout preview. No repeated URL field and no extra audience, benefit, title or description questions.
 - Real server-side retrieval of publicly readable HTML, up to three specific content observations and source-backed headline advice.
 - Optional Gemini API integration for headline suggestions and, only when explicitly enabled, content suggestions grounded in exact quotes from uploaded files. Deterministic, evidence-based fallbacks work without a key.
 - Public URL protections: HTTP(S) only, nonstandard ports blocked, private IPs/hostnames blocked, redirects rechecked, DNS pinned to resolved public IP, request timeout and response size limit.
-- Manual content fallback for websites that block crawling; source is disclosed in results.
+- When a website blocks crawling, the two-choice form suggests uploading product files instead. Backend retains legacy manual-copy support for integrations but the public form no longer exposes that extra field.
 - One-time $49 pricing, no login required for free audit.
 - **NO fake testimonials, sales figures, readiness percentages, or fake progress.**
 
@@ -28,7 +28,7 @@ Open http://localhost:3000 . To enable AI-assisted headlines, set `GEMINI_API_KE
 2. Import the repository into Vercel. Framework preset: **Other** (no build step), root `./`.
 3. Deploy. Vercel will treat `/api/analyze.js` as a Node serverless function and serve the static frontend.
 4. Optional: add `GEMINI_API_KEY` as a server-side environment variable. Do **not** prefix it with `NEXT_PUBLIC_`.
-5. Test a public product URL, an upload-only PDF/ZIP, manual fallback and mobile file picker on a real browser before promoting the link. GitHub Actions runs `npm test` on every push.
+5. Test a public product URL and upload-only PDF/ZIP flow on a real mobile browser before promoting the link. GitHub Actions runs `npm test` and a separate public-production smoke check. If the smoke check returns `302` to `vercel.com/sso-api`, the project is protected by Vercel Authentication and must be made publicly accessible in Vercel's deployment-protection settings.
 
 ## IMPORTANT: Before paid launch
 
@@ -45,7 +45,7 @@ The audit is intentionally open for internal tests, but **add durable per-IP/use
 
 ## Product flow
 
-`Landing → Analyze form → Actual analysis → Free result → $49 order preview → (payment integration pending)`
+`Landing CTA → Two-choice form (files or URL) → Actual analysis → Free result → $49 preview (payment integration pending)`
 
 ## Brand / design
 
