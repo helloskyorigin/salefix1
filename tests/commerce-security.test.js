@@ -51,7 +51,7 @@ test('Dodo session is server-priced and accepts no arbitrary browser-supplied am
     orderId:'11111111-2222-4333-8444-555555555555',env,
     fetchImpl:async()=>({ok:true,json:async()=>({...providerProduct,price:{...providerProduct.price,price:4900}})})
   }),/exactly \$29 USD/);
-  assert.ok(!JSON.stringify(calls[0].body).includes('user_requested_price'));
+  assert.ok(!JSON.stringify(calls[1].body).includes('user_requested_price'));
   assert.equal(checkoutProduct({title:'Real Product',price:'$0',url:'https://seller.example/product'}).title,'Real Product');
   assert.throws(()=>checkoutProduct({title:'Real Product',url:''}),/purchase link/);
   assert.throws(()=>checkoutProduct({title:'Real Product',url:'http://127.0.0.1/private'}),/purchase link/);
