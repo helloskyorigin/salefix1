@@ -8,8 +8,8 @@ export default async function handler(req,res){
   const slug=String(req.query?.slug||new URL(req.url||'/', 'https://salefix.invalid').searchParams.get('slug')||'');
   if(!/^[a-f0-9-]{36}$/.test(slug))return res.status(404).send('Sales page not found.');
   try{
-    const page=await getJSON('salefix:page:'+slug);
-    if(!page)return res.status(404).send('Sales page not found.');
+    const [page,order]=await Promise.all([getJSON('salefix:page:'+slug),getJSON('salefix:order:'+slug)]);
+    if(!page||order?.status!=='paid')return res.status(404).send('Sales page not found.');
     const body=htmlPage(page);
     res.setHeader('Content-Type','text/html; charset=utf-8');
     res.setHeader('Cache-Control','public, max-age=60, s-maxage=120');
