@@ -33,6 +33,17 @@ try{state.results=JSON.parse(sessionStorage.getItem('salefix-analysis')||'null')
 let activeAnalysisController=null;
 let selectedProductFiles=[];
 const formatFileSize=n=>n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB';
+function selectProductFiles(files){
+  const list=Array.from(files||[]);
+  const valid=/\.(?:pdf|zip|docx|xlsx|pptx|epub|txt|md|csv|tsv|json|png|jpg|jpeg|webp|svg)$/i;
+  let error='';
+  if(list.length>3)error='Choose up to 3 files at a time.';
+  else if(list.some(f=>!f.name||!valid.test(f.name)))error='Unsupported file format. Use PDF, ZIP, Office, EPUB, text, CSV, JSON or an image.';
+  else if(list.some(f=>!f.size||f.size>20_000_000))error='Each product file must be non-empty and 20 MB or less.';
+  else if(list.reduce((sum,f)=>sum+f.size,0)>45_000_000)error='Combined product files must be 45 MB or less.';
+  if(error){selectedProductFiles=[];state.error=error;nav('analyze');return false;}
+  selectedProductFiles=list;state.error='';updateSelectedFiles();return true;
+}
 function updateSelectedFiles(){const target=$('#selected-product-files');if(!target)return;target.innerHTML=selectedProductFiles.length?selectedProductFiles.map(f=>`<span class="pf-file-pill">${icon('checkcircle',14)} ${safe(f.name)} <small>${formatFileSize(f.size)}</small></span>`).join(''):'<span>No file selected — product link or description also works.</span>';const clear=$('#clear-product-files');if(clear)clear.hidden=!selectedProductFiles.length;}
 function nav(route){if(route!=='loading'&&state.analyzing&&routeFromHash()==='loading'){activeAnalysisController?.abort();state.analyzing=false;}location.hash=`#/${route||''}`;window.scrollTo({top:0,behavior:'instant'});render()}
 function header(compact=false){return `<header class="site-header"><div class="container header-inner">${logo()}<nav class="nav-links"><a href="#/#how">How it works</a><a href="#/#features">Features</a><a href="#/#pricing">Pricing</a><a href="#/#faq">FAQ</a></nav><a class="button button-primary button-small" href="#/analyze">${compact?'New analysis':'Analyze my product'} ${icon('arrow',15)}</a></div></header>`}
@@ -239,10 +250,12 @@ function showAnalyzeError(message,openManual=false){state.error=String(message||
 async function startAnalysis(){
   if(state.analyzing)return;
   state.error='';state.results=null;
-  if(!state.url&&!selectedProductFiles.length){
-    if(state.manual.trim().length<60){showAnalyzeError('Without a link, paste at least 60 characters of your real product details below.',true);return;}
-  }else{
-    const value=state.url.trim();
+  // A product upload is a complete input on its own; a sales-page URL is optional.
+  const value=state.url.trim();
+  if(!value&&!selectedProductFiles.length&&state.manual.trim().length<60){
+    showAnalyzeError('Without files or a link, paste at least 60 characters of your real product details below.',true);return;
+  }
+  if(value){
     const candidate=/^[a-z][a-z0-9+.-]*:/i.test(value)?value:`https://${value}`;
     try{
       if(/\s/.test(value))throw new Error('spaces');
@@ -250,7 +263,7 @@ async function startAnalysis(){
       if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!url.hostname.includes('.'))throw new Error('invalid');
       state.url=url.href;
     }catch{showAnalyzeError('Enter a public website such as google.com or https://example.com/product, or leave the link blank.',false);return;}
-  }
+  }else state.url='';
   try{sessionStorage.removeItem('salefix-analysis')}catch{}
   state.analyzing=true;const controller=new AbortController();activeAnalysisController=controller;nav('loading');
   let timedOut=false;
@@ -262,8 +275,11 @@ async function startAnalysis(){
   },12000);
   const requestDeadline=setTimeout(()=>{timedOut=true;controller.abort();},40000);
   try{
-    const fileExtracts=selectedProductFiles.length?await extractProductFiles(selectedProductFiles,{onProgress(message){const el=document.getElementById('scan-notice-text');if(el)el.textContent=message;}}):[];
-    if(controller.signal.aborted)return;
+    const fileExtracts=selectedProductFiles.length?await extractProductFiles(selectedProductFiles,{signal:controller.signal,onProgress(message){const el=document.getElementById('scan-notice-text');if(el)el.textContent=message;}}):[];
+    if(controller.signal.aborted){
+      if(timedOut&&routeFromHash()==='loading')showAnalyzeError('File inspection timed out. Try fewer pages or smaller product files.',false);
+      return;
+    }
     const res=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:state.url,audience:state.audience,benefit:state.benefit,manual:state.manual,productName:state.productName,fileExtracts}),signal:controller.signal});
     const data=await res.json();if(controller.signal.aborted){if(timedOut&&routeFromHash()==='loading')showAnalyzeError('Analysis timed out. Please try again or add your product description manually.',true);return;}if(!res.ok)throw new Error(data.error||'Unable to analyze this URL.');
     state.results=data;try{sessionStorage.setItem('salefix-analysis',JSON.stringify(data))}catch{}
@@ -290,14 +306,10 @@ document.addEventListener('submit',e=>{
   }
 });
 document.addEventListener('change',e=>{
-  if(e.target.id==='product-files'){
-    const files=Array.from(e.target.files||[]);
-    if(files.length>3||files.some(f=>f.size>20000000)||files.reduce((n,f)=>n+f.size,0)>45000000){state.error='Please choose up to 3 files, maximum 20 MB each and 45 MB total.';state.showManualDetails=state.showManualDetails||false;e.target.value='';selectedProductFiles=[];nav('analyze');return;}
-    selectedProductFiles=files;updateSelectedFiles();
-  }
+  if(e.target.id==='product-files'&&!selectProductFiles(e.target.files))e.target.value='';
 });
 document.addEventListener('dragover',e=>{if(e.target.closest?.('#product-drop-zone'))e.preventDefault()});
-document.addEventListener('drop',e=>{if(!e.target.closest?.('#product-drop-zone'))return;e.preventDefault();const files=Array.from(e.dataTransfer?.files||[]);if(files.length>3||files.some(f=>f.size>20000000)||files.reduce((n,f)=>n+f.size,0)>45000000){state.error='Please choose up to 3 files, maximum 20 MB each and 45 MB total.';selectedProductFiles=[];nav('analyze');return;}selectedProductFiles=files;updateSelectedFiles()});
+document.addEventListener('drop',e=>{if(!e.target.closest?.('#product-drop-zone'))return;e.preventDefault();selectProductFiles(e.dataTransfer?.files);});
 document.addEventListener('toggle',e=>{if(e.target?.id==='manual-details')state.showManualDetails=e.target.open;},true);
 document.addEventListener('click',async e=>{if(e.target.closest('#clear-product-files')){selectedProductFiles=[];const input=$('#product-files');if(input)input.value='';updateSelectedFiles();return;}if(e.target.closest('#manual-start')){e.preventDefault();state.url='';state.showManualDetails=true;state.error='';nav('analyze');return;}const copy=e.target.closest('[data-copy-headline]');if(copy){const text=String(state.results?.improvedHeadline||'').trim();const feedback=$('.rf-copy-feedback');if(!text){if(feedback)feedback.textContent='No suggestion available to copy.';return;}try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{const field=document.createElement('textarea');field.value=text;field.style.position='fixed';field.style.left='-9999px';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw new Error('Clipboard not available');}if(feedback)feedback.textContent='Headline copied!';}catch{if(feedback)feedback.textContent='Could not copy automatically. Please select the headline text above.';}return;}if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){const n=$('.checkout-alert');if(n)n.textContent='Checkout is intentionally disabled until the verified payment and content delivery flow is configured.'}});
 window.addEventListener('hashchange',()=>{if(state.analyzing&&lastRenderedHash==='#/loading'&&routeFromHash()!=='loading'){activeAnalysisController?.abort();state.analyzing=false;}if(location.hash!==lastRenderedHash)render()});
