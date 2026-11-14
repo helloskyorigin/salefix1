@@ -253,7 +253,7 @@ async function startAnalysis(){
   // A product upload is a complete input on its own; a sales-page URL is optional.
   const value=state.url.trim();
   if(!value&&!selectedProductFiles.length&&state.manual.trim().length<60){
-    showAnalyzeError('Without files or a link, paste at least 60 characters of your real product details below.',true);return;
+    showAnalyzeError('Without a link, paste at least 60 characters of your real product details below, or upload a product file.',true);return;
   }
   if(value){
     const candidate=/^[a-z][a-z0-9+.-]*:/i.test(value)?value:`https://${value}`;
