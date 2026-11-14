@@ -4,7 +4,7 @@ import {issueKitAccess,verifyKitAccess,buildPaidKit} from '../lib/paid-kit.js';
 import handler from '../api/paid-kit.js';
 
 const secret='a-private-test-key-that-is-at-least-32-characters';
-const record={verifiedProviderEvent:true,status:'succeeded',amountCents:4900,currency:'USD',paymentId:'pay_test_123',email:'buyer@example.com',product:{url:'https://example.com/course',title:'AI Guide',description:'Learn to build a simple AI helper using real examples.',price:'$19',audience:'Creators',benefit:'Build a useful AI helper'}};
+const record={verifiedProviderEvent:true,status:'succeeded',amountCents:2900,currency:'USD',paymentId:'pay_test_123',email:'buyer@example.com',product:{url:'https://example.com/course',title:'AI Guide',description:'Learn to build a simple AI helper using real examples.',price:'$19',audience:'Creators',benefit:'Build a useful AI helper'}};
 const now=1800000000;
 test('unverified or wrong amount payments cannot issue paid access',()=>{
   for(const bad of [{...record,verifiedProviderEvent:false},{...record,amountCents:1900},{...record,status:'pending'},{...record,currency:'INR'}])assert.throws(()=>issueKitAccess(bad,secret,now));
