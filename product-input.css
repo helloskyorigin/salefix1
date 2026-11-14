@@ -111,3 +111,18 @@
   .simple-source-label{font-size:14px}
   .analyze-page.simple-analyze .pf-drop-zone strong{font-size:14px}
 }
+
+
+/* Lightweight optional description: compact, readable and capped at 500 characters. */
+.analyze-page.simple-analyze .simple-description-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:20px 0 10px}
+.analyze-page.simple-analyze .simple-description-head label{font-size:15px;font-weight:790;color:#172341}
+.analyze-page.simple-analyze .simple-description-head label small{font-size:11px;font-weight:690;color:#7c899f;background:#f2f5fa;border-radius:20px;padding:5px 9px;margin-left:5px;white-space:nowrap}
+.analyze-page.simple-analyze .simple-description-head output{font-size:12px;font-weight:750;color:#8390a9;font-variant-numeric:tabular-nums;white-space:nowrap}
+.analyze-page.simple-analyze #product-description{display:block;width:100%;min-height:100px;max-height:190px;resize:vertical;border:1px solid #d9e1f1;border-radius:15px;background:#fff;padding:14px 16px;font-family:inherit;font-size:16px;line-height:1.55;color:#1e2b49;outline:none;box-shadow:none;transition:border-color .2s,box-shadow .2s}
+.analyze-page.simple-analyze #product-description:focus{border-color:#5281f5;box-shadow:0 0 0 3px rgba(60,121,247,.12)}
+.analyze-page.simple-analyze #product-description::placeholder{color:#a4aec2}
+@media(max-width:700px){
+  .analyze-page.simple-analyze .simple-description-head{margin:17px 0 9px}
+  .analyze-page.simple-analyze .simple-description-head label{font-size:14px}
+  .analyze-page.simple-analyze #product-description{min-height:90px;font-size:16px}
+}
