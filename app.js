@@ -240,48 +240,9 @@ function exportAuditReport(){
     button.setAttribute('aria-label','Report downloaded');
   }
 }
-function checkout(){const r=state.results;return `${header(true)}<main class="container checkout-page"><div class="checkout-copy"><span class="eyebrow">COMPLETE SALEFIX KIT</span><h1>One-time unlock.<br/><span>Everything in one place.</span></h1><p>Get a personalized, editable Sales Kit for the product you just reviewed. Payment and delivery are only enabled after secure merchant setup.</p><div class="checkout-items"><div>${icon('checkcircle',20)} Complete offer improvement kit</div><div>${icon('checkcircle',20)} Editable sales-page copy and downloadable HTML</div><div>${icon('checkcircle',20)} 10 posts, 3 graphics, buyer replies and launch plan</div><div>${icon('checkcircle',20)} Instant on-site kit access after verified payment</div></div></div><div class="surface checkout-box"><div class="checkout-title">Your order <span>SaleFix</span></div><div class="order-row">SaleFix complete kit <b>$29.00</b></div><div class="order-row total">One-time price <b>$29.00</b></div><label for="product-purchase-link" class="simple-source-label" style="margin-top:18px">Your product purchase link</label><input id="product-purchase-link" type="url" autocomplete="url" inputmode="url" maxlength="1800" value="${safe(state.results?.product?.url||'')}" placeholder="https://yourstore.com/your-product" style="width:100%;min-height:52px;border:1px solid #d6dfed;border-radius:13px;padding:12px 14px;font-size:16px"/><p style="font-size:12px;color:#697691;margin:8px 0 14px">Required for the paid Sales Kit and promotional links. Free audit does not require it.</p><div class="checkout-alert" role="status">Checking secure checkout availability…</div><button class="button button-primary full-width jumbo" id="checkout-button" type="button" disabled>${icon('lock',18)} Secure checkout</button><p>${icon('shield',16)} No signup. After payment, Dodo redirects you back here to unlock your kit. Save your private receipt link to restore access later. Taxes, where applicable, are shown by the payment provider.</p><a href="#/recover" class="back-link">Already purchased? Restore access ↗</a><a class="back-link" href="#/results">← Back to free report</a></div></main>${footer()}`}
-function paymentReturn(){return `${header(true)}<main class="container checkout-page"><div class="surface checkout-box" style="max-width:640px;margin:0 auto"><span class="eyebrow">SECURE ON-SITE DELIVERY</span><h1>Your Sales Kit access</h1><p>SaleFix verifies your $29 payment directly with the server. A checkout redirect alone never unlocks the kit.</p><div id="payment-status" class="checkout-alert" role="status" aria-live="polite">Checking your payment securely…</div><button type="button" class="button button-primary full-width" id="retry-payment">Check payment again</button><p style="font-size:13px;margin-top:14px">Keep your receipt link safe. You can restore access here without email or a login.</p><button type="button" class="button" id="copy-payment-receipt">Copy my private receipt link</button><a class="back-link" href="#/recover">Restore a previous purchase ↗</a><a class="back-link" href="#/">Back to SaleFix</a></div></main>${footer()}`}
-function recovery(){return `${header(true)}<main class="container checkout-page"><div class="surface checkout-box" style="max-width:600px;margin:0 auto"><span class="eyebrow">NO EMAIL OR LOGIN</span><h1>Restore your Sales Kit</h1><p>On this device, SaleFix can reopen your saved purchase. On another device, paste the private receipt link you saved after checkout.</p><button type="button" id="restore-saved-purchase" class="button button-primary full-width">Restore purchase from this device</button><form id="recover-form" style="margin-top:24px"><label for="recover-code">Or paste your private SaleFix receipt link</label><input id="recover-code" name="receipt" type="text" required autocomplete="off" placeholder="https://your-salefix-site/#/payment-return?..." style="width:100%;min-height:52px;margin:10px 0 16px;padding:13px;border:1px solid #dae2ef;border-radius:12px;font-size:14px" /><button class="button full-width" type="submit">Restore from receipt link</button></form><div id="recover-message" class="checkout-alert" role="status" aria-live="polite"></div><p style="font-size:12px">Your receipt link is a private access credential. Do not share it publicly. If it is lost on all devices, automatic recovery is unavailable; contact <a href="mailto:hello.skyorigin@gmail.com">support</a> with your payment reference for manual assistance.</p></div></main>${footer()}`}
-const receiptKey='salefix-private-receipt';
-function validReceipt(receipt){return receipt&&/^[a-f0-9-]{36}$/.test(receipt.orderId||'')&&/^[a-f0-9]{64}$/.test(receipt.claimSecret||'')}
-function storedReceipt(){try{const x=JSON.parse(localStorage.getItem(receiptKey)||'null');return validReceipt(x)?x:null}catch{return null}}
-function saveReceipt(receipt){if(!validReceipt(receipt))return false;try{localStorage.setItem(receiptKey,JSON.stringify(receipt));return true}catch{return false}}
-function receiptFromLink(value){
-  try{
-    const url=new URL(value,location.origin);
-    if(url.origin!==location.origin||!url.hash.startsWith('#/payment-return?'))return null;
-    const params=new URLSearchParams(url.hash.split('?').slice(1).join('?'));
-    const receipt={orderId:params.get('order'),claimSecret:params.get('claim')};
-    return validReceipt(receipt)?receipt:null;
-  }catch{return null}
-}
-function receiptURL(receipt){return location.origin+'/#/payment-return?order='+encodeURIComponent(receipt.orderId)+'&claim='+encodeURIComponent(receipt.claimSecret)}
-function getActiveReceipt(){return receiptFromLink(location.href)||storedReceipt()}
-function beginReceiptRecovery(receipt){if(!validReceipt(receipt))return false;saveReceipt(receipt);location.hash='#/payment-return?order='+encodeURIComponent(receipt.orderId)+'&claim='+encodeURIComponent(receipt.claimSecret);render();return true}
-async function hydratePaymentReturn(){
-  const label=$('#payment-status');if(!label)return;
-  const receipt=getActiveReceipt();
-  if(!receipt){label.textContent='No valid receipt was found on this device. Open your saved purchase receipt or contact support.';return}
-  saveReceipt(receipt);
-  for(let attempt=0;attempt<18;attempt++){
-    if(!label.isConnected||routeFromHash()!=='payment-return')return;
-    try{
-      const response=await fetch('/api/claim',{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({orderId:receipt.orderId,claimSecret:receipt.claimSecret})});
-      const result=await response.json();
-      if(response.ok&&result.state==='paid'&&typeof result.token==='string'){
-        label.textContent='Payment verified. Opening your Sales Kit…';
-        location.hash='#/kit?access='+encodeURIComponent(result.token);
-        render();return;
-      }
-      if(response.status===202){label.textContent='Waiting for secure payment confirmation from Dodo…';}
-      else {label.textContent=result.error||'Payment verification unavailable. Check again shortly.';return}
-    }catch{label.textContent='Could not reach the verification service. Check your connection and retry.';return}
-    if(attempt<17)await new Promise(resolve=>setTimeout(resolve,3000));
-  }
-  if(label.isConnected)label.textContent='Confirmation is taking longer than expected. Use “Check payment again”. No second payment is required.';
-}
+function checkout(){const r=state.results;return `${header(true)}<main class="container checkout-page"><div class="checkout-copy"><span class="eyebrow">COMPLETE SALEFIX KIT</span><h1>One-time unlock.<br/><span>Everything in one place.</span></h1><p>Get a personalized, editable Sales Kit for the product you just reviewed. Payment and delivery are only enabled after secure merchant setup.</p><div class="checkout-items"><div>${icon('checkcircle',20)} Complete offer improvement kit</div><div>${icon('checkcircle',20)} Editable sales-page copy and downloadable HTML</div><div>${icon('checkcircle',20)} 10 posts, 3 graphics, buyer replies and launch plan</div><div>${icon('checkcircle',20)} Secure email delivery and hosted publishing when enabled</div></div></div><div class="surface checkout-box"><div class="checkout-title">Your order <span>SaleFix</span></div><div class="order-row">SaleFix complete kit <b>$29.00</b></div><div class="order-row total">One-time price <b>$29.00</b></div><label for="product-purchase-link" class="simple-source-label" style="margin-top:18px">Your product purchase link</label><input id="product-purchase-link" type="url" autocomplete="url" inputmode="url" maxlength="1800" value="${safe(state.results?.product?.url||'')}" placeholder="https://yourstore.com/your-product" style="width:100%;min-height:52px;border:1px solid #d6dfed;border-radius:13px;padding:12px 14px;font-size:16px"/><p style="font-size:12px;color:#697691;margin:8px 0 14px">Required for the paid Sales Kit and promotional links. Free audit does not require it.</p><div class="checkout-alert" role="status">Checking secure checkout availability…</div><button class="button button-primary full-width jumbo" id="checkout-button" type="button" disabled>${icon('lock',18)} Secure checkout</button><p>${icon('shield',16)} No signup. A receipt and secure access link are emailed after payment verification. Taxes, where applicable, are shown by the payment provider.</p><a href="#/recover" class="back-link">Already purchased? Recover your kit ↗</a><a class="back-link" href="#/results">← Back to free report</a></div></main>${footer()}`}
+function paymentReturn(){return `${header(true)}<main class="container checkout-page"><div class="surface checkout-box" style="max-width:660px;margin:0 auto"><h1>Thanks for checking out SaleFix</h1><p>If your payment succeeded, your kit access link will be emailed after server-side verification. This page does not confirm payment.</p><p>Check your inbox and spam folder for the secure SaleFix link. If you haven't received it, you can request another below.</p><a class="button button-primary full-width" href="#/recover">Recover my purchase link</a><a class="back-link" href="#/">Back to SaleFix</a></div></main>${footer()}`}
+function recovery(){return `${header(true)}<main class="container checkout-page"><div class="surface checkout-box" style="max-width:560px;margin:0 auto"><h1>Recover your Sales Kit</h1><p>Enter the email used at checkout. If an active order exists, we'll email a fresh secure access link.</p><form id="recover-form"><label for="recover-email">Purchase email address</label><input id="recover-email" type="email" name="email" autocomplete="email" required maxlength="254" placeholder="you@example.com" style="width:100%;min-height:52px;margin:10px 0 16px;padding:13px;border:1px solid #dae2ef;border-radius:12px;font-size:16px"/><button class="button button-primary full-width" type="submit">Send secure access link</button></form><p class="checkout-alert" id="recover-message" role="status"></p><a href="mailto:hello.skyorigin@gmail.com">Need help? hello.skyorigin@gmail.com</a></div></main>${footer()}`}
 async function refreshCheckoutAvailability(){
   const button=$('#checkout-button'),alert=$('.checkout-alert');
   if(!button)return;
@@ -302,7 +263,6 @@ document.body.dataset.page=(route===''||route.startsWith('#'))?'landing':'worksp
 const ui=route==='analyze'?analyze():route==='loading'?loading():route==='results'?showResult():route==='checkout'?checkout():route==='recover'?recovery():route==='payment-return'?paymentReturn():route==='kit'?kitShell():['privacy','terms','refunds','contact'].includes(route)?legal(route):landing();$('#app').innerHTML=ui;
 if(route==='kit')hydrateKit();
 if(route==='checkout')refreshCheckoutAvailability();
-if(route==='payment-return')hydratePaymentReturn();
 if(route==='analyze')updateSelectedFiles();
 if(route==='loading'&&!state.analyzing){ if(state.results)nav('results');else nav('analyze') }
 if(route===''||route.startsWith('#')){const anchor=route.slice(1);if(anchor)setTimeout(()=>document.getElementById(anchor)?.scrollIntoView({behavior:'smooth'}),50)} }
@@ -359,11 +319,9 @@ async function startAnalysis(){
 }
 document.addEventListener('submit',e=>{
   if(e.target.id==='recover-form'){
-    e.preventDefault();
-    const value=String(new FormData(e.target).get('receipt')||'').trim();
-    const receipt=receiptFromLink(value);
-    if(!receipt){const m=$('#recover-message');if(m)m.textContent='This does not look like a valid SaleFix receipt link. Paste the link from your original purchase.';return}
-    beginReceiptRecovery(receipt);
+    e.preventDefault();const message=$('#recover-message');const email=String(new FormData(e.target).get('email')||'');
+    if(message)message.textContent='Checking your purchase email…';
+    fetch('/api/recover',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).then(async res=>{const data=await res.json();if(message)message.textContent=data.message||data.error||'Unable to request a link.'}).catch(()=>{if(message)message.textContent='Recovery is currently unavailable.'});
     return;
   }
   if(e.target.id==='analyze-form'){
@@ -393,15 +351,6 @@ document.addEventListener('change',e=>{
 document.addEventListener('dragover',e=>{if(e.target.closest?.('#product-drop-zone'))e.preventDefault()});
 document.addEventListener('drop',e=>{if(!e.target.closest?.('#product-drop-zone'))return;e.preventDefault();selectProductFiles(e.dataTransfer?.files);});
 document.addEventListener('click',async e=>{
-  if(e.target.closest('#restore-saved-purchase')){const receipt=storedReceipt();if(!receipt){const m=$('#recover-message');if(m)m.textContent='No purchase receipt is saved here. Paste your private receipt link instead.';}else beginReceiptRecovery(receipt);return;}
-  if(e.target.closest('#retry-payment')){hydratePaymentReturn();return;}
-  if(e.target.closest('#copy-payment-receipt')){
-    const receipt=getActiveReceipt(),status=$('#payment-status');
-    if(!receipt){if(status)status.textContent='No purchase receipt is available to copy.';return;}
-    try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(receiptURL(receipt));if(status)status.textContent='Private receipt link copied. Store it safely.';}else{if(status)status.textContent='Copy the URL in your browser address bar and keep it private.';}}catch{if(status)status.textContent='Copy the URL in your address bar and keep it private.';}
-    return;
-  }
-
   const jump=e.target.closest('[data-rv-jump]');
   if(jump){
     document.getElementById(jump.dataset.rvJump)?.scrollIntoView?.({behavior:'smooth',block:'start'});
@@ -429,7 +378,7 @@ document.addEventListener('click',async e=>{
   if(e.target.closest('#clear-product-files')){selectedProductFiles=[];const input=$('#product-files');if(input)input.value='';updateSelectedFiles();return;}const copy=e.target.closest('[data-copy-headline]');if(copy){const text=String(state.results?.improvedHeadline||'').trim();const feedback=$('.rf-copy-feedback');if(!text){if(feedback)feedback.textContent='No suggestion available to copy.';return;}try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);}else{const field=document.createElement('textarea');field.value=text;field.style.position='fixed';field.style.left='-9999px';document.body.appendChild(field);field.select();const ok=document.execCommand('copy');field.remove();if(!ok)throw new Error('Clipboard not available');}if(feedback)feedback.textContent='Headline copied!';}catch{if(feedback)feedback.textContent='Could not copy automatically. Please select the headline text above.';}return;}if(e.target.closest('#cancel-analysis')){if(state.analyzing)nav('analyze');return;}if(e.target.closest('#unlock-button'))nav('checkout');if(e.target.closest('#checkout-button')){
   const button=$('#checkout-button'),notice=$('.checkout-alert');if(!state.checkoutReady||!state.results?.product)return;
   button.disabled=true;if(notice)notice.textContent='Opening secure checkout…';
-  try{const p=state.results.product;const purchaseLink=String($('#product-purchase-link')?.value||'').trim();if(!/^https?:\/\/[^\s]+/i.test(purchaseLink))throw Error('Please add a real public product purchase link before checkout.');const resp=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:{title:p.title,description:p.description,url:purchaseLink,price:p.price,headline:state.results.improvedHeadline}})});const data=await resp.json();if(!resp.ok)throw Error(data.error||'Checkout unavailable');if(!validReceipt({orderId:data.orderId,claimSecret:data.claimSecret}))throw Error('Secure buyer receipt missing. Checkout was not started.');saveReceipt({orderId:data.orderId,claimSecret:data.claimSecret});const link=new URL(data.checkoutUrl);if(link.protocol!=='https:'||!link.hostname.endsWith('.dodopayments.com'))throw Error('Invalid checkout link');window.location.assign(link.href);}catch(err){if(notice)notice.textContent=String(err.message||'Checkout unavailable. No payment was taken.');button.disabled=false;}
+  try{const p=state.results.product;const purchaseLink=String($('#product-purchase-link')?.value||'').trim();if(!/^https?:\/\/[^\s]+/i.test(purchaseLink))throw Error('Please add a real public product purchase link before checkout.');const resp=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({product:{title:p.title,description:p.description,url:purchaseLink,price:p.price,headline:state.results.improvedHeadline}})});const data=await resp.json();if(!resp.ok)throw Error(data.error||'Checkout unavailable');const link=new URL(data.checkoutUrl);if(link.protocol!=='https:'||!link.hostname.endsWith('.dodopayments.com'))throw Error('Invalid checkout link');window.location.assign(link.href);}catch(err){if(notice)notice.textContent=String(err.message||'Checkout unavailable. No payment was taken.');button.disabled=false;}
 }});
 window.addEventListener('hashchange',()=>{if(state.analyzing&&lastRenderedHash==='#/loading'&&routeFromHash()!=='loading'){activeAnalysisController?.abort();state.analyzing=false;}if(location.hash!==lastRenderedHash)render()});
 render();
