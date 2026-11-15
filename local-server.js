@@ -8,7 +8,7 @@ import paidKitHandler from './api/paid-kit.js';
 import healthHandler from './api/health.js';
 import statusHandler from './api/status.js';
 import webhookHandler from './api/dodo-webhook.js';
-import recoveryHandler from './api/recover.js';
+import claimHandler from './api/claim.js';
 import publishHandler from './api/publish.js';
 import publicPageHandler from './api/public-page.js';
 
@@ -18,7 +18,7 @@ const handlers={
   '/api/analyze':analyzeHandler,'/api/checkout':checkoutHandler,
   '/api/paid-kit':paidKitHandler,'/api/health':healthHandler,
   '/api/status':statusHandler,'/api/dodo-webhook':webhookHandler,
-  '/api/recover':recoveryHandler,'/api/publish':publishHandler,
+  '/api/claim':claimHandler,'/api/publish':publishHandler,
   '/api/public-page':publicPageHandler
 };
 const server=http.createServer(async(req,res)=>{
