@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import {checkoutProduct,commerceReady,createDodoSession,productCheckoutLink} from '../lib/payment.js';
-import {saveJSON} from '../lib/redis.js';
+import {saveJSON,keyHash} from '../lib/redis.js';
 import {enforceRateLimit} from '../lib/rate-limit.js';
 
 // This route cannot charge or redirect a buyer until ALL merchant, fulfillment,
@@ -17,10 +17,11 @@ export default async function handler(req,res){
     let product;
     try{product=checkoutProduct(body.product)}catch(e){return res.status(422).json({error:String(e.message||'Add your public product checkout link.')})}
     const orderId=crypto.randomUUID();
+    const claimSecret=crypto.randomBytes(32).toString('hex');
     product.url=productCheckoutLink(product);
-    await saveJSON('salefix:order:'+orderId,{id:orderId,status:'pending',product,createdAt:Date.now()},90*86400);
-    const session=await createDodoSession({orderId});
-    return res.status(200).json({checkoutUrl:session.checkoutUrl});
+    await saveJSON('salefix:order:'+orderId,{id:orderId,status:'pending',claimHash:keyHash(claimSecret),product,createdAt:Date.now()},90*86400);
+    const session=await createDodoSession({orderId,claimSecret});
+    return res.status(200).json({checkoutUrl:session.checkoutUrl,orderId,claimSecret});
   }catch(e){
     return res.status(503).json({error:'Checkout could not be started. No charge was made. Please try again later.'});
   }
