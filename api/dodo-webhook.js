@@ -1,6 +1,5 @@
-import {commerceReady,verifyDodoWebhook,verifiedSale,emailKitLink,KIT_PRICE_CENTS} from '../lib/payment.js';
+import {commerceReady,verifyDodoWebhook,verifiedSale} from '../lib/payment.js';
 import {getJSON,saveJSON,setOnce,redisCommand,keyHash} from '../lib/redis.js';
-import {issueKitAccess} from '../lib/paid-kit.js';
 
 export const config={api:{bodyParser:false}};
 const RELEASE_LOCK="if redis.call('GET',KEYS[1]) == ARGV[1] then return redis.call('DEL',KEYS[1]) end; return 0";
@@ -82,31 +81,19 @@ export default async function handler(req,res){
       await saveJSON(replayKey,{done:true,fulfilled:false},WEBHOOK_TTL);
       return res.status(200).json({received:true,fulfilled:false});
     }
-    // Store the payment before delivering; a failing email triggers provider retry
-    // but never loses the verified purchase or issues an unverified entitlement.
+    // The signed webhook is the only source of payment truth.
+    // Delivery happens on the website only after the buyer presents the private receipt.
     const record={
       ...stored,status:'paid',paymentId:sale.paymentId,email:sale.email,
       paidAt:stored.paidAt||Date.now()
     };
     await saveJSON(orderKey,record,PURCHASE_TTL);
     await saveJSON('salefix:payment:'+sale.paymentId,{orderId:sale.orderId},PURCHASE_TTL);
-    // Only a hashed email index is stored. Buyer recovery looks up the order.
-    await saveJSON('salefix:email:'+keyHash(sale.email),{orderId:sale.orderId},PURCHASE_TTL);
-
-    if(!record.deliveryCompletedAt){
-      const token=issueKitAccess({
-        verifiedProviderEvent:true,status:'succeeded',amountCents:KIT_PRICE_CENTS,currency:'USD',
-        paymentId:sale.paymentId,email:sale.email,product:record.product
-      },process.env.SALEFIX_KIT_SECRET,Math.floor(record.paidAt/1000));
-      await emailKitLink({
-        to:sale.email,token,idempotencyKey:'salefix-purchase-'+keyHash(sale.paymentId)
-      });
-      await saveJSON(orderKey,{...record,deliveryCompletedAt:Date.now()},PURCHASE_TTL);
-    }
+    // Never email anything. Verified browser receipt claims the kit on /api/claim.
     await saveJSON(replayKey,{done:true,fulfilled:true},WEBHOOK_TTL);
     return res.status(200).json({received:true});
   }catch{
-    return res.status(500).json({error:'Delivery not confirmed; retry webhook.'});
+    return res.status(500).json({error:'Could not securely save the verified payment; retry webhook.'});
   }finally{
     if(acquired){
       try{await redisCommand(['EVAL',RELEASE_LOCK,1,lock,id])}catch{}
